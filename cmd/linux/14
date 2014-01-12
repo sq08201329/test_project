@@ -1,0 +1,81 @@
+echo "sunqi" | awk 'BEGIN{print "==============================="} {print $0} END{print "==============================="}'
+
+echo -e "1 2 3 4 5\n2 3 4 5 6\n3 4 5 6 7\n4 5 6 7 8\n5 6 7 8 9\n6 7 8 9 10\n" | awk '{print $1","$2}'
+
+awk '/^(sunqi|root)/{print}' /etc/passwd
+awk -F: '$1=="sunqi"{print}' /etc/passwd
+awk -F: '$1~"sunqi"{print}' /etc/passwd
+
+max=(a>b)?a:b
+
+man awk
+
+awk 'ip[$1]=ip[$1] "" $2'
+
+egrep -n "ServerTokens|Timeout|KeepAlive" /etc/httpd/conf/httpd.conf
+
+71:# KeepAlive: Whether or not to allow persistent connections (more than
+74:KeepAlive Off
+77:# MaxKeepAliveRequests: The maximum number of requests to allow
+81:MaxKeepAliveRequests 100
+84:# KeepAliveTimeout: Number of seconds to wait for the next request from the
+87:KeepAliveTimeout 15
+
+66:# Timeout: The number of seconds before receives and sends time out.
+68:Timeout 120		# three shake
+
+44:ServerTokens OS	#do not savety
+
+
+httpd -l
+Compiled in modules:
+  core.c
+  prefork.c 	#预派生
+  http_core.c
+  mod_so.c
+
+#prefork mpm
+sed -n '100,108p' /etc/httpd/conf/httpd.conf
+<IfModule prefork.c>
+StartServers       8
+MinSpareServers    5
+MaxSpareServers   20
+ServerLimit      256 	# 20000max
+MaxClients       256	# <= serverLimit
+MaxRequestsPerChild  4000
+</IfModule>
+
+# 
+lsof -i:80 | nl
+     1	COMMAND   PID   USER   FD   TYPE DEVICE SIZE NODE NAME
+     2	httpd   22472   root    4u  IPv4 345519       TCP *:http (LISTEN)
+     3	httpd   22474 apache    4u  IPv4 345519       TCP *:http (LISTEN)
+     4	httpd   22475 apache    4u  IPv4 345519       TCP *:http (LISTEN)
+     5	httpd   22476 apache    4u  IPv4 345519       TCP *:http (LISTEN)
+     6	httpd   22477 apache    4u  IPv4 345519       TCP *:http (LISTEN)
+     7	httpd   22478 apache    4u  IPv4 345519       TCP *:http (LISTEN)
+     8	httpd   22479 apache    4u  IPv4 345519       TCP *:http (LISTEN)
+     9	httpd   22480 apache    4u  IPv4 345519       TCP *:http (LISTEN)
+    10	httpd   22481 apache    4u  IPv4 345519       TCP *:http (LISTEN)
+
+#user has its' owner main page
+sed -n '358,362p' /etc/httpd/conf/httpd.conf
+    # To enable requests to /~user/ to serve the user's public_html
+    # directory, remove the "UserDir disable" line above, and uncomment
+    # the following line instead:
+    # 
+    UserDir public_html
+
+
+ls -l -Zd /var/www/html/
+drwxr-xr-x  root root system_u:object_r:httpd_sys_content_t:s0 /var/www/html/
+chcon -R -refance /var/www/html /home/sunqi/public
+
+RewriteEngin on
+RewriteRule on /sunqi/?$ /sunqi/ [R]
+
+sed -n '747p' /etc/httpd/conf/httpd.conf
+AddDefaultCharset UTF-8
+
+
+

@@ -1,0 +1,5 @@
+202559.test.domain.com!tmboot.5037.3086788288.-2: 07-09-2013: client high water (), total client ()              
+202559.test.domain.com!tmboot.5037.3086788288.-2: 07-09-2013: Tuxedo Version 10.3.0.0, 32-bit
+202559.test.domain.com!tmboot.5037.3086788288.-2: NLS:4: Cannot open message catalog CMDTUX_CAT, set 1, num 724; check TUXDIR=NULL, LANG=C
+203812.test.domain.com!tmboot.5234.3086436032.-2: 07-09-2013: Tuxedo Version 10.3.0.0, 32-bit
+203812.test.domain.com!tmboot.5234.3086436032.-2: NLS:4: Cannot open message catalog CMDTUX_CAT, set 1, num 724; check TUXDIR=NULL, LANG=C

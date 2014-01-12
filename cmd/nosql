@@ -1,0 +1,58 @@
+#memcached
+install
+memcached -d -u memcached# run groundback
+telnet localhost 11211
+set <key> <flag> <expires> <bytes>
+*set sunqi 0 0 4
+*1024
+STORED
+*incr sunqi 1
+1025
+*get sunqi
+VALUE sunqi 0 4
+1025
+END
+delete sunqi
+DELETED
+get sunqi
+END
+*set sunqi 0 0 4
+*abcd
+*append sunqi 0 0 4
+*efgh
+STORED
+flush_all
+quit
+
+easy-install-2.7 python_memcached
+
+# distribute
+memcached -d -p 11212 -u nobody -c 1024 -m 64
+memcached -d -p 11213 -u nobody -c 1024 -m 64
+
+#redis
+#github上面一兄弟在src/Makefile开头加 CFLAGS= -march=i686解决了，但是我试了。继续google，发现google group里有个兄弟编辑了下src/.make_settings里的OPT，改为OPT=-O2 -march=i686。
+#install
+make
+./redis-server /path/6379.conf
+./redis-server /path/6380.conf
+#help
+ #Keys Strings Hashes Lists Sets Sorted Sets Pub/Sub Transactions Scripting Connection Server 
+./redis-cli
+help @string
+
+#
+esay_install-2.7 redis
+
+# master-slave
+easy_install-2.7 rediscluster
+
+redis-cli INFO
+redis-cli shutdown
+
+#mongodb
+apt-get install mongodb
+export LC_ALL="en_US.utf8"
+mongod -f /etc/mongodb.conf
+
+mongo

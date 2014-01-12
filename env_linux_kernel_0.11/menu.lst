@@ -1,0 +1,5 @@
+default 0
+titile Linux 0.11
+root (fd0)
+kernel /boot/myimage
+boot

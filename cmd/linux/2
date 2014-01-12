@@ -1,0 +1,75 @@
+# acl
+getfacl /
+getfacl: Removing leading '/' from absolute path names
+# file: .
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+#modify
+setfacl -m u:user:mod dir
+setfacl -m g:user:mod dir
+setfacl -m mask::mod dir  #max mode is ..
+setfacl -m d:u:user:mod dir  #newfile in  dir
+#delete
+setfacl -x
+
+mount -o remount,acl /;mount
+/dev/sda2 on / type ext3 (rw,acl)
+proc on /proc type proc (rw)
+sysfs on /sys type sysfs (rw)
+devpts on /dev/pts type devpts (rw,gid=5,mode=620)
+/dev/sda3 on /var type ext3 (rw)
+/dev/sda1 on /boot type ext3 (rw)
+tmpfs on /dev/shm type tmpfs (rw)
+none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)
+sunrpc on /var/lib/nfs/rpc_pipefs type rpc_pipefs (rw)
+nfsd on /proc/fs/nfsd type nfsd (rw)
+
+cat /etc/fstab
+
+#device          mount point                   type     option         beifen jianca
+LABEL=/                 /                       ext3    defaults      1 1
+LABEL=/var              /var                    ext3    defaults,acl        1 2
+LABEL=/boot             /boot                   ext3    defaults        1 2
+tmpfs                   /dev/shm                tmpfs   defaults        0 0
+devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
+sysfs                   /sys                    sysfs   defaults        0 0
+proc                    /proc                   proc    defaults        0 0
+LABEL=SWAP-sda5         swap                    swap    defaults        0 0
+/dev/md0		/mnt/raid5		ext3	defaults	0 0
+/dev/sdb11		swap                    swap    defaults        0 0
+/dev/hdc		/install		ext3	defaults	0 0
+/root/sw.file		swap			swap	defaults	0 0
+=======
+fc 	Move forward to c 	Fc	Move back to c
+mc	Set marker c on this line	 `c	Go to beginning of marker c line. 	'c	Go to first non-blank character of marker c line
+/[0-9]\{2\}
+~	Toggle upp and lower case	
+.	Repeat last text-changing command
+:nr 	fileReads file and inserts it after line n
+l/se list 	tab (^l) backslash (\) backspace (^H) newline ($) bell (^G) formfeed (^L^)
+
+n|	Moves to the column n in the current line
+:reg	vim粘贴板
+&	Repeats last :s command
+:g/str/cmd	Runs cmd on all lines that contain str
+:g/str1/s/str2/str3/	Finds the line containing str1, replaces str2 with str3
+:n,ms/str1/str2/opt	Searches from n to m for str1; replaces str1 to str2; using opt-opt can be g for global change, c to confirm change (y to acknowledge, to suppress), and p to print changed lines
+:v/str/cmd 	Executes cmd on all lines that do not match str
+!! cmd	Executes shell command cmd, places output in file starting at current line
+!! ctrl+r reg_no backspace
+:r! cmd	Reads and inserts output from cmd
+:f filename	rename
+:cd 	dirChanges current working directory to dir 
+:sh	Starts a sub-shell (CTRL-d returns to editor) 
+:so 	fileReads and executes commands in file (file is a shell script)
+!}sort args	Sorts from current position to end of paragraph and replaces text with sorted text
+“ny
+q: 	show history cmd
+gd/*/#	partern current word
+:set all
+
+

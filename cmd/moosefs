@@ -1,0 +1,78 @@
+#!/bin/bash
+#1.master
+#add user
+groupadd mfs
+useradd -g mfs mfs
+#install mfs
+apt-get remove fuse
+apt-get install fuse
+tar -zxvf mfs-1.6.15.tar.gz
+cd mfs-1.6.15
+apt-get install build-essential pkg-config zlib1g-dev 
+./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var/lib --with-default-user=mfs --with-default-group=mfs --disable-mfschunkserver --disable-mfsmount
+make
+make install
+#config mfs master
+cd /etc
+cp mfsmaster.cfg.dist mfsmaster.cfg
+cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
+cp mfsexports.cfg.dist mfsexports.cfg
+vi mfsexports.cfg
+cd /var/lib/mfs/
+cp metadata.mfs.empty metadata.mfs
+#vi /etc/hosts
+192.168.1.150  master
+#start server
+#vim /etc/rc.local
+/usr/sbin/mfsmaster start
+/usr/sbin/mfscgiserv
+
+/usr/sbin/mfsmaster -s
+
+#2.backup master
+#add user
+#install mfs
+./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var/lib --with-default-user=mfs --with-default-group=mfs --disable-mfschunkserver --disable-mfsmount
+#config mfs logger
+cd /etc
+cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
+#vi /etc/hosts
+192.168.1.150  master
+#start server
+#vim /etc/rc.local
+/usr/sbin/mfsmetalogger start
+
+#3.chunk1
+#add user
+#install mfs
+./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var/lib --with-default-user=mfs --with-default-group=mfs --disable-mfsmaster
+#config chunk
+cd /etc
+cp mfschunkserver.cfg.dist mfschunkserver.cfg
+cp mfshdd.cfg.dist mfshdd.cfg
+#vi mfshdd.cfg
+/mnt/chunk1
+mkdir /mnt/chunk1
+chown -R mfs:mfs /mnt/chunk1
+chown -R mfs:mfs /var/lib/mfs
+#vi /etc/hosts
+192.168.1.150  master
+#vim /etc/rc.local
+/usr/sbin/mfschunkserver start
+
+#4.fuse
+#user sunqi
+#add user
+#install mfs
+sudo ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var/lib --with-default-user=mfs --with-default-group=mfs --disable-mfsmaster --disable-mfschunkserver
+#config  
+cd /etc
+cp mfshdd.cfg.dist mfshdd.cfg
+cp mfschunkserver.cfg.dist mfschunkserver.cfg
+sed -i '2a\/somewhere' mfshdd.cfg
+sed -i '/MASTER_HOST/a\MASTER_HOST = master' mfschunkserver.cfg
+#vi /etc/hosts
+192.168.1.150  master
+#mount mfs
+#vim /etc/rc.local
+/usr/bin/mfsmount /home/sunqi/MFS/ -H master

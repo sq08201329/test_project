@@ -1,0 +1,47 @@
+dnssec-keygen
+
+@@@@@@@@@@@@@@
+
+alternatives --config mta
+ststem-switch-mail
+netstat -tnlp | grep 25
+dnssec-keygen -a HMAC_MD5 -b 128 -n USER redhat 
+man dhcpd.conf /algorithm
+
+chown -R g+w named 
+
+# vsftpd
+ftpusers	#
+user_list	#
+
+service vsftpd start
+lsof -i:21
+
+/var/ftp/pub	#anonymous
+
+# pam
+list -> db -> pam -> ftp.conf
+yum list | grep db4-u
+make virtual list -> db_load -T -t hash -f list.txt dbfile 
+chmod 600 dbfile  -> vi ftp_virtual_user
+auth reqired /lib/security/pam_userdb.so db=/etc/vsftpd/virtualuser
+account reqired /lib/security/pam_userdb.so db=/etc/vsftpd/virtualuser
+-> vi /etc/vsftpd/vsftpd.conf
+anonymous_enable=NO
+pam_service_name=ftp_virtual_user
+guest_enable=YES
+guest_username=sunqi
+anon_world_readable_only=no
+
+#smtp tcp:25
+send:
+	smtp:25(sendmail,posfix)
+
+recv:
+	pop3:110(dovcot,cyrus-imap)	imap:143(dovcot,cyrus-imap)
+
+# switch to postfix
+alternatives --config mta
+ststem-switch-mail 
+
+

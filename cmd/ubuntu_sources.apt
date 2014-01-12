@@ -1,0 +1,28 @@
+deb http://cn.archive.ubuntu.com/ubuntu/ lucid main restricted
+deb-src http://cn.archive.ubuntu.com/ubuntu/ lucid main restricted
+deb http://cn.archive.ubuntu.com/ubuntu// lucid-updates main restricted
+deb-src http://cn.archive.ubuntu.com/ubuntu// lucid-updates main restricted
+deb http://cn.archive.ubuntu.com/ubuntu/ lucid universe
+deb-src http://cn.archive.ubuntu.com/ubuntu/ lucid universe
+deb http://cn.archive.ubuntu.com/ubuntu/ lucid-updates universe
+deb-src http://cn.archive.ubuntu.com/ubuntu/ lucid-updates universe
+deb http://cn.archive.ubuntu.com/ubuntu/ lucid multiverse
+deb-src  http://cn.archive.ubuntu.com/ubuntu/ lucid multiverse
+deb http://cn.archive.ubuntu.comm/ubuntu/ lucid-updates multiverse
+deb-src http://cn.archive.ubuntu.comm/ubuntu/ lucid-updates multiverse
+deb http://security.ubuntu.com/ubuntu lucid-security main restricted
+deb-src http://security.ubuntu.com/ubuntu lucid-security main restricted
+deb http://security.ubuntu.com/ubuntu lucid-security universe
+deb-src  http://security.ubuntu.com/ubuntu lucid-security universe
+deb http://security.ubuntu.com/ubuntu lucid-security multiverse
+deb-src http://security.ubuntu.com/ubuntu lucid-security multiverse
+
+
+deb http://mirrors.163.com/debian squeeze main non-free contrib
+deb http://mirrors.163.com/debian squeeze-proposed-updates main contrib non-free
+deb http://mirrors.163.com/debian-security squeeze/updates main contrib non-free
+
+
+deb-src http://mirrors.163.com/debian squeeze main non-free contrib
+deb-src http://mirrors.163.com/debian squeeze-proposed-updates main contrib non-free
+deb-src http://mirrors.163.com/debian-security squeeze/updates main contrib non-free

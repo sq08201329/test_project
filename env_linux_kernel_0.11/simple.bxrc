@@ -1,0 +1,6 @@
+megs: 16
+romimage: file="/usr/local/bochs/share/bochs/BIOS-bochs-latest", address=0xf0000
+vgaromimage: file="/usr/local/bochs/share/vgabios/vgabios.bin"
+boot: floppy
+floppya:1_44="images/rootimage-0.11", status=inserted
+ata0-master: type=disk, path="images/hdimage-devel", mode=flat, cylinders=410, heads=16, spt=38

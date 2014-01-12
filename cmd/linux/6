@@ -1,0 +1,110 @@
+分区(pratition|disk)->物理卷(pysical valume)->卷组(volume group)->逻辑卷(logical volume)->filesystem
+
+fdisk	# 分区
+pvdisplay pvscan pvcreate pvremove
+vgscan vgcreate vgdisplay vgextend vgreduce vgremove
+lvdisplay lvscan lvcreate lvextend lvreduce lvremove
+格式化
+
+fdisk /dev/sdb
+type 8e
+
+pvcreate /dev/sdb{1,2}
+
+vgcreate vname pv
+vgcreate -s 8M vname pv # change PEsize
+vgextend vg pv
+
+lvcreate -L 1000Msize -n lv vg
+lvcreate -l 1000numPE -n lv vg
+mkfs.ext3 /dev/sunqivg/sunqi1lv
+mount /dev/sunqivg/sunqi1lv /mnt/lv
+touch
+
+df -h
+lvextend -L [+]size  /dev/vg/lv
+
+resize2fs /dev/vg/lv
+
+#reduce
+1.umount /dev/vg/lv
+2.e2fsck -f /dev/vg/lv # 扫描并修复文件系统
+3.resize2fs /dev/vg/lv size
+4.lvreduce -L size /dev/vh/lv
+5.mount /dev/vg/lv
+
+# snapshot
+lvcreate -L 200M -s -n lv /dev/vg/lv
+
+
+-------------------------------------
+
+locale -a | grep -i ^z.*utf8
+vi /etc/sysconfig/i18n 
+
+yum update
+add /media/... a local source
+system-config-language
+
+
+
+ps -ef | grep logd
+klogd # kernel 
+syslogd # usr room log
+lvcreate -L 100M -s -n newlv /dev/vg/lv
+
+#quota
+i-node k|M 磁柱 为单位
+
+#size kb or i-nodes
+mount -o remount,usrquota,grpquota /mnt/lv
+mount -o remount,usrquota,grpquota /
+
+quotacheck -a(all)v(verbose)c(create)u(user)g(group)m 
+quotacheck -avcugm
+#==> create aquota.user aquota.group
+quotaon / 
+quotaon /mnt/lv
+
+edquota -u usrname
+
+quotaoff
+
+repquota /mnt/lv
+warnquota 
+quota -u sunqi
+
+---------
+locale -a | grep ^z.*utf*
+
+/etc/sysconfig/i18n
+yum update
+application->add/remove app->Language->chinese
+
+system-config-date
+system-config-language
+
+log
+# boot log
+vi /var/log/dmesg
+log service
+==>klogd
+==>syslogd
+==>logger
+
+# 排错
+1.input output
+2.config
+3.log
+
+chkconfig --list | grep log
+
+server
+/etc/sysconfig/syslog # enables logging  from remote mechines
+#SYSLOGD_OPTIONS="-r -m 0"
+service syslog restart
+client
+/etc/syslog.conf # *.* 		@remote_servip
+logger -s -t aaa this test message
+
+dynamic host configuration protocol

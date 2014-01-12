@@ -1,0 +1,3 @@
+DB_USERNAME=sys
+DB_PASSWD=The_sunqi
+export DB_USERNAME DB_PASSWD

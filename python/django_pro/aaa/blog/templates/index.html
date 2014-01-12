@@ -1,0 +1,20 @@
+<html>
+<head><title>{{title}}</title></head>
+<body>
+<h1>hello {{user.name}}, my age is {{user.age}},booklists:{{booklist.0}},say {{user.say}}</h1>
+
+<p>
+{%if user1%}
+	<a>True and name is:{{user.name}}</a>
+{%else%}
+	<a>False ! user1 is not exist</a>
+{%endif%}
+{%for book in booklist%}
+<li>{{forloop.counter}}:{{book}}</li>
+{%endfor%}
+<li>
+id : {{id}}
+</li>
+</p>
+</body>
+</html>

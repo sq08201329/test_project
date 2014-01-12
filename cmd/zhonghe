@@ -1,0 +1,247 @@
+# disable selinux
+/etc/sysconfig/selinux
+# stop iptables
+chkconfig iptables stop
+
+#apache php 10
+#http mysql php
+tar zxf httpd-2.0.64.tar.gz  mysql-5.0.18.tar.gz  
+tar jxf php-5.2.8.tar.bz2
+cd httpd-2.0.64
+yum -y install gcc
+./configure && make && make install
+/usr/local/apache2/bin/apachectl start
+cd
+cd mysql-5.0.18
+# sed -n '/shell>/p' INSTALL-SOURCE | sed  '1,14{s/shell>//}' | sed -n '/shell/!p' | sh
+yum -y install gcc-c++ ncurses-devel
+echo 'useradd mysql
+      cd mysql-VERSION
+      ./configure --prefix=/usr/local/mysql --with-extra-charsets=all  --with-charset=gbk --with-charset=utf8
+      make
+      make install
+      cp support-files/my-medium.cnf /etc/my.cnf
+      cd /usr/local/mysql
+      bin/mysql_install_db --user=mysql
+      chown -R root  .
+      chown -R mysql var
+      chgrp -R mysql .
+      bin/mysqld_safe --user=mysql & ' | sh
+cd
+/usr/local/mysql/bin/mysqladmin -uroot password The_sunqi
+cd php-5.2.8
+yum -y install libxml2-devel
+./configure --prefix=/usr/local/php --with-mysql=/usr/local/mysql/ --with-apxs2=/usr/local/apache2/bin/apxs && make && make install
+cd
+unzip Discuz_7.2_FULL_SC_GBK.zip
+mv upload/* /usr/local/apache2/htdocs/
+chmod o+w -R ./config.inc.php ./attachments ./forumdata ./forumdata/cache       ./forumdata/templates ./forumdata/threadcaches  ./forumdata/logs ./uc_client/data/cache
+# httpd.conf
+AddType application/x-httpd-php .php
+DirectoryIndex index.php index.html index.html.var
+
+#nfs
+# /etc/exports
+/usr/local/apache2/htdocs/      *(rw)
+service nfs restart
+
+
+# ngix fastcgi 11
+#12813
+#ngix php
+tar zvf nginx-0.9.4.tar.gz mysql-5.0.18.tar.gz 
+tar jvf php-5.2.8.tar.bz2
+# INSTALL mysql
+cd nginx-0.9.4
+yum -y install pcre-devel
+./configure --without-http-cache  --without-http_gzip_module && make && make install
+cd
+cd php-5.2.8
+yum -y install libxml2-devel
+./configure --prefix=/usr/local/php --with-mysql=/usr/local/mysql/  --enable-fastcgi && make && make install
+cd
+
+mount 192.168.1.10:/usr/local/apache2/htdocs /usr/local/nginx/html/
+# ngix.conf
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+         #   fastcgi_index  index.php;
+         #   fastcgi_param  SCRIPT_FILENAME  /usr/local/nginx/html/$fastcgi_script_name;
+         #   include        fastcgi_params;
+        #}
+/usr/local/php/bin/php-cgi -b 127.0.0.1:9000 &
+/usr/local/nginx/sbin/nginx
+/usr/local/nginx/sbin/nginx -s reload
+
+
+# mysql master 12
+# mysql slave 13
+# INSTALL mysql
+# master
+[mysqld]
+log-bin=mysql-bin
+server-id=12 
+# slave
+[mysqld]
+log-bin=mysql-bin
+server-id=13 
+# master slave restart
+/usr/local/mysql/bin/mysqld_safe --user=mysql --log-bin=/usr/local/mysql/var/ --server-id=12 &
+/usr/local/mysql/bin/mysqld_safe --user=mysql --server-id=13 &
+kill -9 $(cat /usr/local/mysql/var/`hostname`.pid)
+# master
+grant replication slave, replication client on *.* to 'nimei'@"%" identified by '123456'
+show master status;
+# slave 
+# change master to master_host='192.168.1.12',master_user='nimei',master_password='123456', master_log_file='mysql-bin.000006',master_log_pos=434;
+start slave;
+show slave status\G;
+# slave 
+show processlist;
+# read bin log
+/usr/local/mysql/bin/mysqlbinlog mysql-bin.000006
+
+# squid 15
+# 51219
+tar zxf squid-2.6.STABLE23.tar.gz
+cd squid-2.6.STABLE23
+./configure --prefix=/usr/local/squid && make && make install
+cd 
+
+mkdir /squid_cache
+chmod 777 /squid_cache
+mkdir -p /usr/local/squid/share/errors/Simplify_Chinese
+mkdir -p /data/squid/pid
+touch /data/squid/pid/squid.pid
+mkdir -p /data/squid/log
+touch /data/squid/log/cache.log
+touch /data/squid/log/access.log
+chmod 777 /data -R
+
+mv   /usr/local/squid/etc/squid.conf  /usr/local/squid/etc/squid.conf.bak
+echo 'http_port 8000 vhost
+cache_peer 192.168.1.10 parent 80 0 no-query originserver weight=1 name=a
+cache_peer_domain a sunqi.example.com
+cache_dir ufs /squid_cache 100 2 2
+acl all src 0.0.0.0/0.0.0.0
+http_access allow all
+cache_peer_access a allow all
+error_directory /usr/local/squid/share/errors/Simplify_Chinese
+pid_filename /data/squid/pid/squid.pid
+cache_log /data/squid/log/cache.log
+access_log /data/squid/log/access.log' > /usr/local/squid/etc/squid.conf
+# 53430
+/usr/local/squid/sbin/squid -z 
+/usr/local/squid/sbin/squid -D
+# test
+/usr/local/apache2/bin/ab http://sunqi.example.com
+# cache dynamic page
+echo 'refresh_pattern \.php$ 1000 100% 1000' >> /usr/local/squid/etc/squid.conf
+echo 'refresh_pattern \.gif$ 1000 100% 1000' >> /usr/local/squid/etc/squid.conf
+# 10 
+;nameserver 192.168.1.14
+192.168.1.15    sunqi.example.com
+chmod 777 /usr/local/squid/ -R
+
+# Nagios 16
+# mysql apache2 mysql 
+scp -r root@192.168.1.10:/usr/local/mysql/ /usr/local/mysql
+scp -r root@192.168.1.10:/usr/local/apache2 /usr/local/php
+scp -r root@192.168.1.10:/usr/local/apache2 /usr/local/apache2
+/usr/local/apache2/bin/apachectl restart
+cp -r /root/nagios-3.2.3/html/docs/* /usr/local/apache2/htdocs/
+# http://192.168.1.16/quickstart.html
+yum install httpd php
+yum install gcc glibc glibc-common
+yum install gd gd-devel
+
+/usr/sbin/useradd -m nagios
+passwd nagios
+
+/usr/sbin/groupadd nagcmd
+/usr/sbin/groupadd apache
+/usr/sbin/usermod -a -G nagcmd nagios
+/usr/sbin/usermod -a -G nagcmd apache
+
+wget http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-3.2.3.tar.gz
+wget http://prdownloads.sourceforge.net/sourceforge/nagiosplug/nagios-plugins-1.4.11.tar.gz
+tar xzf nagios-3.2.3.tar.gz
+cd nagios-3.2.3
+./configure --with-command-group=nagcmd
+make  all
+make install
+make install-init
+make install-config
+make install-commandmode
+cd
+
+vi /usr/local/nagios/etc/objects/contacts.cfg
+
+cd nagios-3.2.3
+mkdir -p  /etc/httpd/conf.d/
+make install-webconf
+cat /etc/httpd/conf.d/nagios.conf >> /usr/local/apache2/conf/httpd.conf
+cd 
+
+htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+/usr/local/apache2/bin/apachectl restart
+#72321
+tar xzf nagios-plugins-1.4.11.tar.gz
+cd nagios-plugins-1.4.11
+./configure --with-nagios-user=nagios --with-nagios-group=nagios --enable-redhat-pthread-workaround && make && make install
+cd
+
+chkconfig --add nagios
+chkconfig nagios on
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+#/usr/local/nagios/etc/cgi.cfg
+use_authentication=0
+/etc/init.d/nagios restart
+service nagios restart
+#77124
+# my command
+define command{
+        command_name    sunqi        
+	command_line    $USER1$/mycommand
+        }
+# local
+define service{
+        use                             local-service       
+        host_name                       localhost
+        service_description             sunqi
+        check_command                   sunqi
+        }
+service nagios restart
+
+#MooseFS
+#master
+yum install gcc glibc glibc-common fuse fuse-devel fuse-libs install zlib-devel
+tar zxf mfs-1.6.15.tar.gz ;cd mfs-1.6.15; ./configure --prefix=/usr/local/mfs && make && make install
+
+sed -i '13s/#//' mfsexports.cfg.dist 
+cp mfsmaster.cfg.dist mfsmaster.cfg
+cp mfsexports.cfg.dist mfsexports.cfg
+cp /usr/local/mfs/var/mfs/metadata.mfs.empty  /usr/local/mfs/var/mfs/metadata.mfs
+/usr/local/mfs/sbin/mfsmaster
+#instll python
+
+#chunk
+cd /usr/local/mfs/etc
+for i in ./*;do mv $i ${i%.*}; done
+sed -i '2a\/home' mfshdd.cfg
+sed -i '/MASTER_HOST/a\MASTER_HOST = 192.168.1.19' mfschunkserver.cfg 
+chmod 777 /home
+/usr/local/mfs/sbin/mfschunkserver
+
+#fuse
+lsmod | grep fuse
+modprobe fuse 
+lsmod | grep fuse
+tar zxf mfs-1.6.15.tar.gz ;cd mfs-1.6.15; ./configure --prefix=/usr/local/mfs --enable-mfsmount && make && make install
+#master
+/usr/local/python/bin/python /usr/local/mfs/sbin/mfscgiserv
+#fuse
+/usr/local/mfs/bin/mfsmount/mfsmount /mnt/mfs -H 192.168.1.19 -o nonempty  
+mv . undel
+/usr/local/mfs/bin/mfsmount /mnt/mfs -H 192.168.1.19 -o mfsmeta,nonempty

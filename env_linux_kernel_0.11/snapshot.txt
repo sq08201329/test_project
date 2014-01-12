@@ -1,0 +1,25 @@
+PS1=[`pwd`]#
+TERM=console
+PATH=:/usr/gnu/bin:/usr/local/bin:/usr/ucb:/bin:/usr/bin:/etc:/usr/etc
+HOME=/usr/root
+[/usr/root]# set -o
+[/usr/root]# set | grep edit
+[/usr/root]# ls | grep a --color
+usage: grep [-CVbchilnsvwx] [-<num>] [-AB <num>] [-f file] [-e] expr [files]
+[/usr/root]#
+[/usr/root]#
+[/usr/root]#
+[/usr/root]#
+[/usr/root]# clear
+clear: command not found
+[/usr/root]# ls
+a.out    hello.c
+[/usr/root]#
+[/usr/root]#
+[/usr/root]# ls
+a.out    hello.c
+[/usr/root]# clear
+clear: command not found
+[/usr/root]# ls
+a.out    hello.c
+[/usr/root]# ß

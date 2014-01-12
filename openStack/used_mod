@@ -1,0 +1,17 @@
+ubuntu-cloud-keyring
+mysql-server python-mysqldb
+rabbitmq-server
+ntp
+vlan bridge-utils
+keystone
+glance
+quantum-server
+nova-api nova-cert novnc nova-consoleauth nova-scheduler nova-novncproxy nova-doc nova-conductor
+cinder-api cinder-scheduler cinder-volume iscsitarget open-iscsi iscsitarget-dkms
+openstack-dashboard memcached
+openvswitch-switch openvswitch-datapath-dkms
+quantum-plugin-openvswitch-agent quantum-dhcp-agent quantum-l3-agent quantum-metadata-agent
+cpu-checker
+kvm libvirt-bin pm-utils
+quantum-plugin-openvswitch-agent
+nova-compute-kvm

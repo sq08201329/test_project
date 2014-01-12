@@ -1,0 +1,17 @@
+去oracle官方网站下载instantclient-basiclite-win32-10.2.0.3-20061115.zip，
+address: http://www.oracle.com/technetwork/cn/topics/winsoft-095945-zhs.html
+解压到E盘。打开解压的文件夹，新建目录network，在network下面再建子目录admin，
+把oracle配置文件tnsnames.ora放入admin文件夹中（即目录结构为：E:/instantclient_10_2/network/admin/tnsnames.ora）。
+tnsnames.ora最好是到linux下的oracle主目录中（$ORACLE_HOME/network/admin/tnsnames.ora）拷贝。
+ 拷贝过来的tnsnames.ora要打开
+把HOST一项改成虚拟机中linux系统的IP地址。
+
+ instantclient设置完之后，只要在配置一下PL/SQL developer即可。 启动PL/SQL developer之后，
+
+打开tools下的preferences对话框，在connection项里面把Oracle Home设置成E:/instantclient_10_2 ； OCI Library设置成E:/instantclient_10_2/oci.dll。重启登陆。 等于说PL/SQL developer连接远程的数据库用到的IP地址，数据库名等配置信息都存放在tnsnames.ora中。 
+
+乱码：
+在windows中创建一个名为“NLS_LANG”的系统环境变量，设置其值为“SIMPLIFIED CHINESE_CHINA.ZHS16GBK”，然后重新启动 pl/sql developer，这样检索出来的中文内容就不会是乱码了。如果想转换为UTF8字符集，可以赋予“NLS_LANG”为 “AMERICAN_AMERICA.UTF8”，然后重新启动 pl/sql developer。其它字符集设置同上。
+
+ORA-12541 TNS 无监听程序
+lsnrctl.exe --> start 

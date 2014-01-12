@@ -1,0 +1,337 @@
+help index
+help set
+
+#pre var
+_user _date _editor _o_version _o_release _privilege _sqlplus_release _connect_identifier
+
+sql/ #sql end with /,will be buffered
+list #show buffer sqls
+
+@sqlfile
+start sqlfile
+
+#user ?
+sys--super user 有sysdba角色 can create database
+system--          sysoper      can't create database
+
+#pl/sql usefull
+connect
+disconnect
+
+passwd
+editte session,resource to sunqi;
+
+start  file.sql# @
+spool filename
+spool off
+show user
+
+select * from where name=&varname
+
+set linesize
+set pagesize
+
+# create user
+# dba userused
+create 	user username identified by password
+drop 	user
+alter	user
+
+grant all|seletc|update on table to user
+grant all|seletc|update on table to user with grant optiona
+grant connect on table to user with admin option
+revoke ...		on table from user
+
+# profile
+create profile lock_account limit 	failed_login_attempts 3 password_lock_time 2
+					password_life_time 10	password_grace_time 2	
+					password_life_time 10	password_grace_time 2	password_resue_time 10; # the same password ,can user 10 days
+alter user sunqi profile lock_account;
+alter user sunqi account unlock;
+
+drop profile file_name; cascade 级联
+
+# sqlplus editor
+$ORACLE_HOME/sqlplus/admin/glogin.sql	# define _editor=vim
+
+#type
+char
+varchar
+col
+number
+date
+timestamp
+blob
+
+# date --format 12-MAR-2012
+# modify
+alter session set nls_date_format='yyyy-mm-dd';
+
+
+# sleect
+filed is null
+filed is not null
+
+# rollback
+savepoint a;
+delete from table
+rollback to a;
+
+#export
+#path $ORACLE_HOME/bin
+exp userid=user/pwd@oraInstance table=(emp)  file=$path
+exp userid=user/pwd@oraInstance table=(otheruser.emp)  file=$path # rows direct=y
+exp userid=user/pwd@oraInstance owner=user  file=$path
+
+# increace
+exp userid=system/pwd@oraInstance full=y inctype=complete owner=user  file=$path
+
+#import
+imp userid=user/pwd@oraInstance table=(emp)  file=$path
+imp userid=user/pwd@oraInstance  fromuser= touser file=
+#import database
+imp userid=system/pwd@oraInstance full=y  file=$path
+
+
+#
+user_tables
+all_
+dba_
+# role privilege user
+system_privilege_map
+dba_roles
+dba_tab_privs
+role_sys_privs
+dba_sys_privs
+dba_tablespaces
+dba_role_privs
+# database
+select * from global_name
+
+#create datebase
+dbca	--new database
+
+#
+set transaction read only # just can do select
+
+# func
+lower()
+upper
+length()
+substr(str,start,len)
+
+round(,[])	#round(5.65) => 5.7
+trunc(n,[])	#trunc(5.65) =>
+mod()
+cell()		#floor(5.65) => 5	 #floor(-5.65) => -6 less than int
+floor()		#cell(5.65) => 5	 #cell(-5.65) => -6 less than int
+
+abs()		# |-3|
+sin()
+asin()
+cos()
+acos()
+tan()
+atan()
+exp()
+log()
+power()
+
+#date
+sysdate		#system date
+add_mounts(date,8) # = date + 8mounts
+last_day(date) 	# 所在日期的最后一天的日期 2013/2/29 
+
+to_char(,'')	# yyyy mm dd hh12 hh24 mi ss
+		# L99999.99    <==> number(7,2)
+		# 9	num, ignore 0
+		# 0	num, enough 0
+		# . ,	split
+		# $,L,C,G,D
+to_date
+
+# system func
+sys_context('USERENV', '')	# terminal language db_name nls_date_fromat session_user current_schema host
+
+#
+select * from dual 	# for test
+
+# tablespace > section > partition > block
+create tablespace data01 datafile '/home/oracle/ts.dbf' size 20M uniform size 128k
+create table T2 tablespace data01 as select * from emp
+select tablespace_name from user_tables where table_name='T2'
+select tablespace_name from dba_data_files where file_name='/home/oracle/tablespace.dbf'
+
+drop tablespace sp_name includeing contents and datafiles;
+alter tablespace sp_name offline
+alter tablespace sp_name online
+alter tablespace sp_name read only
+alter tablespace sp_name read write
+
+#extend tablespace room
+1.	alter tablespace sp_name add datafile '' size 20M
+2.	alter tablespace sp_name  '' resize 20M
+3.	alter tablespace sp_name  '' autoextend on next 10M maxsize 500M
+
+#move tablespace
+select tablespace_name from dba_data_files where file_name='/home/oracle/tablespace.dbf'
+alter tablespace sp_name offline;
+host move s_p_file  d_p_file 
+alter tablespace sp_name rename data_file s_p_file d_p_file 
+alter tablespace sp_name online;
+
+# other tablespace
+
+#
+not null, unique, primary key, foreign key, check
+select * from user_constraints where table_name='emp'
+
+# procedure
+create or replace procedure sp_pro1(ids number) is 
+--declare
+begin
+     insert into T1 values(ids);
+end;
+
+exec sp_pro1 
+call sp_pro1 
+
+#PL/SQL
+declear 
+	;	#var curcer complex_type
+begin
+	; 	#execute
+exception
+	#oracle exception ?
+end
+# package
+declare
+        v_ename varchar2(5);
+begin
+	select ename into v_ename from emp where empno=&no;
+	dbms_output.put_line('asdasd'||v_ename);
+exception
+	when no_data_found then
+	dbms_output.put_line('input error,reinput please!');
+end;
+
+#function
+create function func_name(var type) return type is var_return type
+begin
+	;
+	return var_return;
+end;
+
+var var_return type
+call func_name('') into :var_return
+print var_return
+
+#package
+create package package_name is
+procedure  pro_name(var type);
+function   func_name(var type);
+end;
+
+create or replace package body package_name is
+procedure  pro_name(var type);
+begin
+	;
+end;
+function   func_name(var type)
+return type is var_return type
+begin
+	;
+end;
+end;
+/
+
+call package_name.pro();
+call package_name.func();
+
+# var
+scalar
+composite
+reference
+large object
+
+set serveroutput on
+
+declare
+c_tax_rate number(3,2):=0.03;
+v_name emp.ename%type; 		# type same sa emp.ename
+v_sal number(7,2);
+v_tax_sal number(7,2);
+begin
+select ename, sal into v_name,v_sal from emp where empno=&no;
+v_tax_sal:=v_sal*c_tax_rate;
+dbms_output.put_line(v_name||v_tax_sal||v_sal);
+end;
+
+# record type
+type emp_record_type is record(var1 type,var2 type ...)
+var emp_record_type
+
+var.var1
+
+#pl/sql table -> array
+# emp.ename array
+type sp_table_type is table of emp.ename%type index by binary_integer # index is integer
+var sp_table_type
+
+var[0]=value 	# 1<-->1
+
+#cursor 	# 1<-->n
+declare
+	type sq_emp_cursor is ref cursor;
+	test_cursor sq_emp_cursor
+	--other var
+	v_ename emp.empno%type
+	v_sal	emp.sal%type
+begin
+	open test_cursor for select ename,sal from emp where deptno='';
+	loop
+		fetch test_cursor into v_ename,v_sal;
+		exit when test_cursor%notfound;		# exit
+		dbms_output.put_line('');
+	end loop
+	close test_cursor;
+
+end;
+
+create or replace  procedure sp_pro6(spName in varchar2) is
+v_sal emp.sal%type;
+begin
+select sal into v_sal from emp where ename=spName;
+if v_sal<2000 then
+update emp set sal=sal*1.1 where ename=spName;
+end if;	#elsif
+end;
+
+goto end_loop
+<<end_loop>>
+
+# exception ?
+case_not_found
+no_data_found
+cursor_already_open
+invaild_cursor	# reopen,close a close cursor
+invaild_number
+too_many_rows
+zero_divide
+
+# define exception
+--define exception
+myexception exception;
+begin
+	update emp set sal=sal+1000 where empno='';
+	if sql%notfound then
+	raise myexception;	# start exception
+	end if;
+exception
+	when myexception then
+	print()
+end;
+
+#view
+create or replace view view_name as select ...  [with read only]
+drop view view_name 

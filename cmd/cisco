@@ -1,0 +1,94 @@
+enable
+configure terminal
+hostname r1
+interface f0/0
+ip address 192.168.10.2 | no ip address
+no shutdown
+exit | end
+
+r1(config)# enable password 123
+r1(config)# enable secret 123
+r1(config)# no ip domain-lookup
+show running-config
+show  startup-config
+copy running-config startup-config
+write running-config startup-config
+show interfaces fastEthernet 0/0
+show interfaces f0/0
+
+# --telnet
+r1(config)# line vty 0 5
+        password sunqi
+        login
+        end
+
+erase running-configure
+
+# --log truncate
+r1(config)#line console 0
+r1(config-line)#logging synchronous 
+
+r1(config-line)#exec-timeout 0 0
+
+
+# --host route
+mask 255.255.255.255
+# --net  route
+mask 255.255.255.0
+
+#show ip route
+
+# --static route add
+(config)# ip route netfiled netmask if|next-route-ip
+(config)# ip route 192.168.2.1 255.255.255.0 f0/0
+(config)# ip route 192.168.1.1 255.255.255.0 192.168.3.1
+(config)# no ip route netfiled netmask if|next-route-ip
+
+# --dnamic 
+#show ip protocols
+#debug ip rip
+#undebug ip rip
+#undebug all
+#u all
+(config)#router rip
+(config-router)#ver 2
+(config-router)#network 4.0.0.0
+(config-router)#network 3.0.0.0
+# --rip
+max jump is 16
+30s update
+180s uneffect
+240s reflesh
+
+# boradcast
+255.255.255.255 # all net
+192.168.1.255	# sub net
+
+# OSPF
+router ospf
+router-id
+network net 255.255.255.255-mask area area-no
+exit
+
+(config)# interface loopback ?
+  <0-2147483647>  Loopback interface number
+(config)# router ospf ?
+  <1-65535>  Process ID
+config-router)#router-id ?
+  A.B.C.D  OSPF router-id in IP address format
+(config-router)#network 4.4.4.0 0.0.0.255 area 200
+
+# --acl
+(config)# access-list ?
+(config-if)ip access-group 100 out
+
+# named acl
+show access-list
+(config)#ip access-list extended sunqi 
+(config-ext-nacl)# permit
+(config-if)ip access-group  sunqi out
+
+# switch
+(config-if)#description link r1
+(config-if)#interface vlan1
+(config-if)#ip address

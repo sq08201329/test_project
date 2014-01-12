@@ -1,0 +1,5 @@
+function put_sshkey_rsa_remhost() {
+	ssh-keygen -t rsa
+	REM_HOST=$1
+	cat $HOME/.ssh/id_rsa.pub | ssh $REM_HOST "cat >> ~/.ssh/authorized_keys"
+}

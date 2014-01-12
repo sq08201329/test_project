@@ -1,0 +1,7 @@
+stu: stu.c
+	gcc -o stu stu.c -L$(ORACLE_HOME)/lib -lclntsh
+stu.c: stu.pc
+	proc parse=none stu.pc
+clean:
+	rm -f tp* stu.c stu.lis stu
+.PHONY:clean

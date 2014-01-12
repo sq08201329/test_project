@@ -1,0 +1,5 @@
+ping
+curl --head www...
+traceroute
+netstat
+lsof -i:22

@@ -1,0 +1,76 @@
+<<<<<<< HEAD
+000008.test.domain.com!BBL.13724.3086079680.0: 07-11-2013: client high water (1), total client (0)
+000008.test.domain.com!BBL.13724.3086079680.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit, Patch Level (none)
+000008.test.domain.com!BBL.13724.3086079680.0:  
+=======
+102128.test.domain.com!tmloadcf.5712.3086554816.-2: 07-11-2013: client high water (0), total client (0)            
+102128.test.domain.com!tmloadcf.5712.3086554816.-2: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+102128.test.domain.com!tmloadcf.5712.3086554816.-2: CMDTUX_CAT:872: INFO: TUXCONFIG file /home/oracle/proc/tuxedo/bankit/simpletux has been updated
+102143.test.domain.com!BBL.5716.3086595776.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit, Patch Level (none)
+102143.test.domain.com!BBL.5716.3086595776.0: LIBTUX_CAT:262: INFO: Standard main starting
+102143.test.domain.com!TMS_ORA.5717.3086370496.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+102143.test.domain.com!TMS_ORA.5717.3086370496.0: LIBTUX_CAT:262: INFO: Standard main starting
+102200.test.domain.com!TMS_ORA.5717.3086370496.0: LIBTUX_CAT:466: ERROR: tpopen TPERMERR xa_open returned XAER_RMERR
+102200.test.domain.com!TMS_ORA.5717.3086370496.0: LIBTUX_CAT:250: ERROR: tpsvrinit() failed
+102200.test.domain.com!TMS_ORA.5717.3086370496.0: LIBTUX_CAT:300: ERROR: _tlog_open: _gp_tblopen: UNIX sys call error - 2
+102200.test.domain.com!tmboot.5715.3086112448.-2: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+102200.test.domain.com!tmboot.5715.3086112448.-2: CMDTUX_CAT:825: ERROR: Process TMS_ORA at simple failed with /T tperrno (TPERMERR - resource manager error)
+102200.test.domain.com!TMS_ORA.5724.3086812864.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+102200.test.domain.com!TMS_ORA.5724.3086812864.0: LIBTUX_CAT:262: INFO: Standard main starting
+102201.test.domain.com!TMS_ORA.5724.3086812864.0: LIBTUX_CAT:466: ERROR: tpopen TPERMERR xa_open returned XAER_RMERR
+102201.test.domain.com!TMS_ORA.5724.3086812864.0: LIBTUX_CAT:250: ERROR: tpsvrinit() failed
+102201.test.domain.com!TMS_ORA.5724.3086812864.0: LIBTUX_CAT:300: ERROR: _tlog_open: _gp_tblopen: UNIX sys call error - 2
+102201.test.domain.com!tmboot.5715.3086112448.-2: CMDTUX_CAT:825: ERROR: Process TMS_ORA at simple failed with /T tperrno (TPERMERR - resource manager error)
+102201.test.domain.com!test.5730.3086592208.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+102201.test.domain.com!test.5730.3086592208.0: LIBTUX_CAT:262: INFO: Standard main starting
+102202.test.domain.com!test.5730.3086592208.0: LIBTUX_CAT:466: ERROR: tpopen TPERMERR xa_open returned XAER_RMERR
+102202.test.domain.com!test.5730.3086592208.0: LIBTUX_CAT:6014: ERROR: tpopen failed - TPERMERR - resource manager error
+102202.test.domain.com!test.5730.3086592208.0: LIBTUX_CAT:250: ERROR: tpsvrinit() failed
+102202.test.domain.com!tmboot.5715.3086112448.-2: CMDTUX_CAT:825: ERROR: Process test at simple failed with /T tperrno (TPESYSTEM - internal system error)
+102346.test.domain.com!BBL.5716.3086595776.0: CMDTUX_CAT:26: INFO: The BBL is exiting system
+103346.test.domain.com!BBL.6278.3085969088.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit, Patch Level (none)
+103346.test.domain.com!BBL.6278.3085969088.0: LIBTUX_CAT:262: INFO: Standard main starting
+103347.test.domain.com!TMS_ORA.6279.3086304960.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+103347.test.domain.com!TMS_ORA.6279.3086304960.0: LIBTUX_CAT:262: INFO: Standard main starting
+103348.test.domain.com!TMS_ORA.6286.3086329536.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+103348.test.domain.com!TMS_ORA.6286.3086329536.0: LIBTUX_CAT:262: INFO: Standard main starting
+103348.test.domain.com!test.6292.3086375120.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+103348.test.domain.com!test.6292.3086375120.0: LIBTUX_CAT:262: INFO: Standard main starting
+103348.test.domain.com!test.6292.3086375120.0: LIBTUX_CAT:525: INFO: Default tpsvrinit() function used
+103400.test.domain.com!test.6292.3086375120.0: text..................
+115243.test.domain.com!tmshutdown.10834.3086005952.-2: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115243.test.domain.com!tmshutdown.10834.3086005952.-2: LIBTUX_CAT:603: ERROR: TUXCONFIG file /home/oracle/proc/tuxedo/bankit/simpletux does not exist
+115243.test.domain.com!tmshutdown.10834.3086005952.-2: LIBTUX_CAT:588: ERROR: Unable to open TUXCONFIG file
+115243.test.domain.com!tmshutdown.10834.3086005952.-2: FATAL: internal error: CMDTUX_CAT:754: ERROR: error processing configuration file
+
+115243.test.domain.com!tmshutdown.10834.3086005952.-2: FATAL: internal error: CMDTUX_CAT:1360: ERROR: configuration file not found
+
+115608.test.domain.com!tmloadcf.10925.3086890688.-2: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115608.test.domain.com!tmloadcf.10925.3086890688.-2: CMDTUX_CAT:879: INFO: A new file system has been created. (size = 952 512-byte blocks)
+115608.test.domain.com!tmloadcf.10925.3086890688.-2: CMDTUX_CAT:871: INFO: TUXCONFIG file /home/oracle/proc/tuxedo/bankit/simpletux has been created
+115628.test.domain.com!tmloadcf.10928.3086726848.-2: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115628.test.domain.com!tmloadcf.10928.3086726848.-2: CMDTUX_CAT:872: INFO: TUXCONFIG file /home/oracle/proc/tuxedo/bankit/simpletux has been updated
+115710.test.domain.com!tmloadcf.10943.3086767808.-2: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115710.test.domain.com!tmloadcf.10943.3086767808.-2: CMDTUX_CAT:872: INFO: TUXCONFIG file /home/oracle/proc/tuxedo/bankit/simpletux has been updated
+115725.test.domain.com!BBL.10946.3086972608.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit, Patch Level (none)
+115725.test.domain.com!BBL.10946.3086972608.0: LIBTUX_CAT:577: ERROR: Unable to register because the slot is already owned by another process
+115725.test.domain.com!BBL.10946.3086972608.0: LIBTUX_CAT:248: ERROR: System init function failed, Uunixerr = 
+115725.test.domain.com!BBL.10946.3086972608.0: CMDTUX_CAT:26: INFO: The BBL is exiting system
+115727.test.domain.com!TMS_ORA.10947.3086141120.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115727.test.domain.com!TMS_ORA.10947.3086141120.0: LIBTUX_CAT:223: WARN: Duplicate server
+115727.test.domain.com!TMS_ORA.10947.3086141120.0: LIBTUX_CAT:248: ERROR: System init function failed, Uunixerr = 
+115727.test.domain.com!TMS_ORA.10948.3086898880.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115727.test.domain.com!TMS_ORA.10948.3086898880.0: LIBTUX_CAT:223: WARN: Duplicate server
+115727.test.domain.com!TMS_ORA.10948.3086898880.0: LIBTUX_CAT:248: ERROR: System init function failed, Uunixerr = 
+115727.test.domain.com!test.10949.3086235856.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115727.test.domain.com!test.10949.3086235856.0: LIBTUX_CAT:223: WARN: Duplicate server
+115727.test.domain.com!test.10949.3086235856.0: LIBTUX_CAT:248: ERROR: System init function failed, Uunixerr = 
+115727.test.domain.com!WSL.10950.3086059200.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115727.test.domain.com!WSL.10950.3086059200.0: LIBTUX_CAT:262: INFO: Standard main starting
+115727.test.domain.com!WSH.10951.3086776000.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115727.test.domain.com!WSH.10951.3086776000.0: WSNAT_CAT:1030: INFO: Work Station Handler joining application
+115727.test.domain.com!WSH.10952.3085960896.0: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115727.test.domain.com!WSH.10952.3085960896.0: WSNAT_CAT:1030: INFO: Work Station Handler joining application
+115739.test.domain.com!tmshutdown.10962.3086603968.-2: 07-11-2013: Tuxedo Version 10.3.0.0, 32-bit
+115739.test.domain.com!tmshutdown.10962.3086603968.-2: FATAL: internal error: CMDTUX_CAT:766: ERROR: must run on master node
+>>>>>>> f70cd01cc70de7279eb8764aee52ce156de3fe0e

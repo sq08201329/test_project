@@ -1,0 +1,21 @@
+144658.test.domain.com!tmboot.32670.3086370496.-2: 07-08-2013: client high water (0), total client (0)            
+144658.test.domain.com!tmboot.32670.3086370496.-2: 07-08-2013: Tuxedo Version 10.3.0.0, 32-bit
+144658.test.domain.com!tmboot.32670.3086370496.-2: LIBTUX_CAT:603: ERROR: TUXCONFIG file /home/tuxedo/simpdir/simpletux does not exist
+144659.test.domain.com!tmboot.32670.3086370496.-2: LIBTUX_CAT:588: ERROR: Unable to open TUXCONFIG file
+144659.test.domain.com!tmboot.32670.3086370496.-2: FATAL: internal error: CMDTUX_CAT:754: ERROR: error processing configuration file
+
+144659.test.domain.com!tmboot.32670.3086370496.-2: FATAL: internal error: CMDTUX_CAT:1360: ERROR: configuration file not found
+
+173129.test.domain.com!tmadmin.4985.3086300864.-2: 07-08-2013: Tuxedo Version 10.3.0.0, 32-bit
+173129.test.domain.com!tmadmin.4985.3086300864.-2: LIBTUX_CAT:603: ERROR: TUXCONFIG file /home/tuxedo/simpdir/simpletux does not exist
+173129.test.domain.com!tmadmin.4985.3086300864.-2: LIBTUX_CAT:588: ERROR: Unable to open TUXCONFIG file
+174202.test.domain.com!tmloadcf.5127.3086255808.-2: 07-08-2013: Tuxedo Version 10.3.0.0, 32-bit
+174202.test.domain.com!tmloadcf.5127.3086255808.-2: CMDTUX_CAT:879: INFO: A new file system has been created. (size = 952 512-byte blocks)
+174202.test.domain.com!tmloadcf.5127.3086255808.-2: CMDTUX_CAT:871: INFO: TUXCONFIG file /home/tuxedo/simpdir/simpletux has been created
+175007.test.domain.com!BBL.5231.3086010048.0: 07-08-2013: Tuxedo Version 10.3.0.0, 32-bit, Patch Level (none)
+175007.test.domain.com!BBL.5231.3086010048.0: LIBTUX_CAT:262: INFO: Standard main starting
+175007.test.domain.com!simpserv.5233.3086891216.0: 07-08-2013: Tuxedo Version 10.3.0.0, 32-bit
+175007.test.domain.com!simpserv.5233.3086891216.0: LIBTUX_CAT:262: INFO: Standard main starting
+175007.test.domain.com!simpserv.5233.3086891216.0: Welcome to the simple server
+175159.test.domain.com!simpserv.5233.3086891216.0: LIBTUX_CAT:522: INFO: Default tpsvrdone() function used
+175202.test.domain.com!BBL.5231.3086010048.0: CMDTUX_CAT:26: INFO: The BBL is exiting system

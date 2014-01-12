@@ -1,0 +1,141 @@
+git is at it's heart very stupid simple
+
+# get man pages  eg: git help log
+git clone git://git.kernel.org/pub/scm/git/git-manpages.git
+cp git-manpage/man1/* /usr/local/share/man/man1
+cp git-manpage/man5/* /usr/local/share/man/man5
+cp git-manpage/man7/* /usr/local/share/man/man7
+
+# git completion
+cp /root/git-1.7.6/contrib/completion/git-completion.bash  .git-completion.bash
+echo '. .git-completion.bash' >> /etc/bashrc
+. ~/.bash_profile
+
+#init
+git init    #create repository
+
+#comnfig dir /etc ~/ .git
+git config --system
+git config --global user.email 'sq08201329@gmail.com'   #global
+git config  user.email 'sq08201329@gmail.com'           #local
+git config --global core.editor vi
+git config --global merge.tool  vimdiff
+git config --global alias.co commit #alias
+
+git config --list
+git config <var:user.email>
+
+git add file*
+git rm --cached
+git mv
+git status
+git diff file
+
+# undo
+git checkout -- file
+
+git commit -m "content"
+
+# recommit
+git add forgottrn_file
+git commit --amend
+
+# cp .git -> repository
+git checkout -f HEAD
+
+git hash-object
+
+git show .git/object/hash
+
+git cat-file -t 
+git ls-tree master|HEAD # change directory
+
+tree blob commit 
+
+git tag v0.01
+git tag -a mialstone -m "comment"
+git tag -l
+git tag -a version <part of sha1> # add tag for one commit
+
+git archive --format=tar --prefix=  v0.01 | gzip > s.tar.gz
+
+git branch -r
+git branch -a
+git branch test
+
+git checkout test
+git checkout -b test # swhich to a  new branch named 'test'
+git checkout -b <newlocalbranch> <remotealias>/<remotebranch> # swhich to a  new branch named 'test'
+
+git merge test
+
+git branch -D test
+
+
+#need add first
+git diff --staged
+git diff origin/master..master
+
+git reset --soft part_of_sha1
+	  --
+
+git log --since|--until="2012-3-10|2 weeks 
+git log --pretty=oneline|short|full|fuller #git help log serch format
+git log --onelien
+git log --stat --summary
+git log -p -2#show diff
+git log --author --commiter
+
+#remote
+git remote add <alias> <url>
+git remote add origin git@github.com:sq08201329/test_project.git
+git remote -v
+git remote rm origin
+git remote rename <old_remotename> <new_remotename>
+
+git push -u <remotealias> <branchname>
+git push <rmmotename> --tags  #git push origin v1.0
+git push <rmmotename> v1.0
+git push <remotealias> <localbranch>:<newremotebranch> #create a new remote branch and push to it
+git push <remotealias> :<newremotebranch> #delete a remote branch 
+
+git fetch origin 
+
+
+#################IS STARTING#########################
+
+#### build a git server
+adduser git
+mkdir test.git;cd test.git
+git --bare init # user: git
+
+
+##config
+[remote "origin"]
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	url = git@github.com:sq08201329/test_project.git
+[remote "gitserver"]
+	url = git@gitServer:/home/git/test_project
+
+git remote add gitserver git@node2:~/test.git # on local projiect
+git push gitserver master # push to gitserver
+
+git push
+
+
+#### git tools
+git log
+git log --abbrev-commit #show a short uniq sha1
+git log --format=oneline #
+git log --pretty=oneline #
+git log --abbrev-commit --format=oneline
+
+git show <sha1> #show detail sha1's commit
+
+git rev-parse <branchname> # show branch sha1
+
+git reflog     # show your branch point to where --local stored
+
+git show HEAD@{n} 
+
+cat ~/.ssh/id_rsa.pub | ssh root@gitServer "cat >> /home/git/.ssh/authorized_keys"

@@ -1,0 +1,146 @@
+rpm -ivh  dbcp*
+rpm -qc dhcp  #qury config file
+cp /usr/share/doc/dhclient-3.0.5/dhclient.conf.sample /etc/dhcpd.conf
+
+
+ip pool shubnet 192.168.43.0 netmask 255.255.255.0
+
+service dhcpd start
+
+/etc/sysconfig/dhcpd
+eth0 for server
+
+/etc/rc.d/init.d/dhcpd
+process file
+
+/var/lib/dhcp/dhcpd.leases
+
+chkconfig dhcpd on
+
+dhclient [eth0]  #client get ip
+dhclient -r	# release ip
+#window cmds
+ipconfig /release
+ipconfig /renew
+tcpdump -i eth0 -v   # get pages
+
+#relay
+/etc/sysconfig/dhcrelay
+server	# route add -net 192.168.3.0(target net) netmask 255.255.255.0 gw 192.168.2.130(route)
+	# route add –net 192.168.3.0 netmask 255.255.255.0 dev eth0(下一跳)
+eth0 eth1
+/etc/sysctl.conf # boot route function
+sysctl -p #effect now
+
+/etc/sysconfig/dhcrelay #DHCPSERVERS="serv_ip"
+/etc/sysconfig/dhcpd 	#eth0
+service dhcrelay start
+dhcrelay serv_ip
+
+# dhcp log
+/etc/dhcpd.conf  	# log-facility local4;
+/etc/syslog.conf 	# local4.none	/var/log/messages
+			# local4.*	/var/log/dhcpd.log
+
+#DNS --domain name system(service)
+what is DNS
+
+# windows hosts file position
+c:/windows/system32/drivers/etc
+
+<<<<<<< HEAD
+rpm bind	# /etc/named.conf # define zone
+		# /var/named/zone...
+
+=======
+rpm bind
+service named
+/etc/named.conf # zone
+/var/named/zone...
+rpm bind_chroot # root changed to be /var/named/chroot
+rpm caching-nameserver
+
+cp -p named.caching-nameserver.conf named.conf 
+service named start
+
+netstat -tunlp | grep 53
+
+# zone  named.confi
+acl locallan {ip1/24; ip2/24};
+acl t1 {ip};
+options {
+	forwarders {202.106.0.20; }; #转发器 外网
+	allow-query {locallan;};
+}
+
+zone "." {
+	type hint; 	#根提示
+	file "name.ca"; # /var/named/chroor/named/named.ca
+}
+zone "example.zone" {
+	type master;
+	file "example.com.zone";
+	allow-transfer{locallan;};
+	allow-update {key redhat;};
+}
+key "redhat" {
+        algorithm hmac-md5;
+        secret "BqhI54nlYBIkY2GAP8Hm/g==";
+};
+zone "10.168.192.in-addr.arpa" {
+	type master;
+	file "192.168.10.zone";
+}
+view "v1" {
+	match-clients {t1;};
+	zone {};
+	...
+};
+
+zone "example.zone" {
+	type slave;
+	file "slaves/aa.zone"; #/var/named/chroor/named/slaves
+	masters {192.168.1.123;};
+}
+zone "localhost" {
+        type master;
+        file "localhost.zone";
+};
+
+zone "0.0.127.in-addr.arpa" {
+        type master;
+        file "name.local";
+};
+
+
+# zone file
+chgrp named .zone
+生存周期
+$TTL 86400
+			(起始授权记录)
+zone			first record	prointed		content
+example.com.	IN 	SOA		centos.example.com.	root.example.com.(100	 15M 	10M 	1D 	1H)
+@		IN 	SOA		centos.example.com.	root(
+100	#序列号
+15M 	#15 min 检查一次
+10M 	#检测失败 ，重新发送
+1D 	#重新发送了一天，辅助过期 不再解析
+1H)	#错误记录的缓存时间
+			second record
+			NS(name service)centos.example.com.	
+centos 0	IN	A(正向)		192.168.20.2
+centos 0	IN	A(正向)		192.168.20.3
+www		IN	CNAME(alias)    centos
+ip			ptr(反向)	ns
+			MX(邮件交换[接收]) 优先级	to
+
+
+@ 	#instead zone name ->example.com.
+
+host 
+nslookup 
+host -t mx exampele
+nslookup -type=mx example.com
+dig www.example.com
+
+------------------------

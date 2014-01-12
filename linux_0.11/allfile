@@ -1,0 +1,194 @@
+.
+|-- Image
+|-- Makefile
+|-- System.map
+|-- allfile
+|-- boot
+|   |-- bootsect
+|   |-- bootsect.o
+|   |-- bootsect.s
+|   |-- head.o
+|   |-- head.s
+|   |-- setup
+|   |-- setup.o
+|   `-- setup.s
+|-- fs
+|   |-- Makefile
+|   |-- bitmap.c
+|   |-- bitmap.o
+|   |-- block_dev.c
+|   |-- block_dev.o
+|   |-- buffer.c
+|   |-- buffer.o
+|   |-- char_dev.c
+|   |-- char_dev.o
+|   |-- exec.c
+|   |-- exec.o
+|   |-- fcntl.c
+|   |-- fcntl.o
+|   |-- file_dev.c
+|   |-- file_dev.o
+|   |-- file_table.c
+|   |-- file_table.o
+|   |-- fs.o
+|   |-- inode.c
+|   |-- inode.o
+|   |-- ioctl.c
+|   |-- ioctl.o
+|   |-- namei.c
+|   |-- namei.o
+|   |-- open.c
+|   |-- open.o
+|   |-- pipe.c
+|   |-- pipe.o
+|   |-- read_write.c
+|   |-- read_write.o
+|   |-- stat.c
+|   |-- stat.o
+|   |-- super.c
+|   |-- super.o
+|   |-- truncate.c
+|   `-- truncate.o
+|-- include
+|   |-- a.out.h
+|   |-- asm
+|   |   |-- io.h
+|   |   |-- memory.h
+|   |   |-- segment.h
+|   |   `-- system.h
+|   |-- const.h
+|   |-- ctype.h
+|   |-- errno.h
+|   |-- fcntl.h
+|   |-- linux
+|   |   |-- config.h
+|   |   |-- fdreg.h
+|   |   |-- fs.h
+|   |   |-- hdreg.h
+|   |   |-- head.h
+|   |   |-- kernel.h
+|   |   |-- mm.h
+|   |   |-- sched.h
+|   |   |-- sched.h.cur1
+|   |   |-- sched.h.old
+|   |   |-- sys.h
+|   |   `-- tty.h
+|   |-- signal.h
+|   |-- stdarg.h
+|   |-- stddef.h
+|   |-- string.h
+|   |-- sys
+|   |   |-- stat.h
+|   |   |-- times.h
+|   |   |-- types.h
+|   |   |-- utsname.h
+|   |   `-- wait.h
+|   |-- termios.h
+|   |-- time.h
+|   |-- unistd.h
+|   `-- utime.h
+|-- init
+|   |-- main.c
+|   `-- main.o
+|-- kernel
+|   |-- Makefile
+|   |-- asm.o
+|   |-- asm.s
+|   |-- blk_drv
+|   |   |-- Makefile
+|   |   |-- blk.h
+|   |   |-- blk_drv.a
+|   |   |-- floppy.c
+|   |   |-- floppy.o
+|   |   |-- hd.c
+|   |   |-- hd.o
+|   |   |-- ll_rw_blk.c
+|   |   |-- ll_rw_blk.o
+|   |   |-- ramdisk.c
+|   |   `-- ramdisk.o
+|   |-- chr_drv
+|   |   |-- Makefile
+|   |   |-- chr_drv.a
+|   |   |-- console.c
+|   |   |-- console.o
+|   |   |-- keyboard.S
+|   |   |-- keyboard.o
+|   |   |-- keyboard.s
+|   |   |-- rs_io.o
+|   |   |-- rs_io.s
+|   |   |-- serial.c
+|   |   |-- serial.o
+|   |   |-- tty_io.c
+|   |   |-- tty_io.o
+|   |   |-- tty_ioctl.c
+|   |   `-- tty_ioctl.o
+|   |-- exit.c
+|   |-- exit.o
+|   |-- fork.c
+|   |-- fork.o
+|   |-- kernel.o
+|   |-- math
+|   |   |-- Makefile
+|   |   |-- math.a
+|   |   |-- math_emulate.c
+|   |   `-- math_emulate.o
+|   |-- mktime.c
+|   |-- mktime.o
+|   |-- panic.c
+|   |-- panic.o
+|   |-- printk.c
+|   |-- printk.o
+|   |-- sched.c
+|   |-- sched.o
+|   |-- signal.c
+|   |-- signal.o
+|   |-- sys.c
+|   |-- sys.o
+|   |-- system_call.o
+|   |-- system_call.s
+|   |-- traps.c
+|   |-- traps.o
+|   |-- vsprintf.c
+|   `-- vsprintf.o
+|-- lib
+|   |-- Makefile
+|   |-- _exit.c
+|   |-- _exit.o
+|   |-- close.c
+|   |-- close.o
+|   |-- ctype.c
+|   |-- ctype.o
+|   |-- dup.c
+|   |-- dup.o
+|   |-- errno.c
+|   |-- errno.o
+|   |-- execve.c
+|   |-- execve.o
+|   |-- lib.a
+|   |-- malloc.c
+|   |-- malloc.o
+|   |-- open.c
+|   |-- open.o
+|   |-- setsid.c
+|   |-- setsid.o
+|   |-- string.c
+|   |-- string.o
+|   |-- wait.c
+|   |-- wait.o
+|   |-- write.c
+|   `-- write.o
+|-- mm
+|   |-- Makefile
+|   |-- Makefile-gcc3.x
+|   |-- Makefile-gcc4.1
+|   |-- memory.c
+|   |-- memory.o
+|   |-- mm.o
+|   |-- page.o
+|   `-- page.s
+`-- tools
+    |-- build
+    |-- build.c
+    `-- system
+
+14 directories, 177 files

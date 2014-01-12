@@ -1,0 +1,47 @@
+#	(c) 2003 BEA Systems, Inc. All Rights Reserved.
+#ident	"@(#) samples/atmi/simpapp/ubbsimple	$Revision: 1.5 $"
+
+#Skeleton UBBCONFIG file for the TUXEDO Simple Application.
+#Replace the <bracketed> items with the appropriate values.
+
+*RESOURCES
+IPCKEY	 	233332
+
+#Example:
+#IPCKEY		123456
+
+DOMAINID	simpapp
+MASTER		simple
+MAXACCESSERS	10
+MAXSERVERS	5
+MAXSERVICES	10
+MODEL		SHM
+LDBAL		N
+
+*MACHINES
+DEFAULT:
+		APPDIR="/home/tuxedo/simpdir"
+		TUXCONFIG="/home/tuxedo/simpdir/simpletux"
+		TUXDIR="/home/tuxedo/tuxedo10gR3"
+#Example:
+#		APPDIR="/home/me/simpapp"
+#		TUXCONFIG="/home/me/simpapp/tuxconfig"
+#		TUXDIR="/usr/tuxedo"
+
+#<Machine-name>	LMID=simple
+
+#Example:
+"test.domain.com"		LMID=simple
+
+*GROUPS
+GROUP1
+	LMID=simple	GRPNO=1	OPENINFO=NONE
+
+*SERVERS
+DEFAULT:
+		CLOPT="-A"
+
+simpserv	SRVGRP=GROUP1 SRVID=1
+
+*SERVICES
+TOUPPER

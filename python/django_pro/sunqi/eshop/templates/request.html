@@ -1,0 +1,17 @@
+<html>
+	<body>
+{%for f in request%}
+<li>{{f}} </li>
+{%endfor%}
+{{requests}}
+
+{%for k,v in dd.items%}
+<li>{{forloop.counter}}:{{k}}: {{v}} </li>
+{%endfor%}
+
+<table>
+	{{table}}
+</table>
+
+	</body>
+<html>

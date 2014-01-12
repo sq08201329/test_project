@@ -1,0 +1,27 @@
+finger -p sunqi
+
+du -s hole.file    	#512/blk
+wc -c hole.file
+cat hole.file > file	# hole ==> 0
+od -c file.hole		# show 
+
+size `which gcc`
+
+cc -std=c99 ../apue1/hello.c 
+#stop link shared lib
+cc -static ../apue1/hello.c ; size a.out
+cc ../apue1/hello.c ; size a.out
+
+# csh
+limit
+#bash 
+ulimit
+
+# #name -- create string resource-limit.c
+#define doit(name) pr_limits(#name, name)
+
+find /usr/share/man -type f -print  | xargs zcat | grep getrlimit --color
+
+hexdump -x *.o
+<signal.h>
+#define sigfillset(ptr) (*(ptr) = ~(sigset_t)0, 0) # return 0

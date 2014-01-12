@@ -1,0 +1,38 @@
+linux-0.11-060618-gcc4.tar.gz
+Makefile
+	 -mcpu=i386 ==> -march=i386 
+kernel/blk_drv/blk.h:87
+	 #elif ==> #else
+
+# install linux kernel 0.11 env
+# bochs
+tar zxvf bochs-2.4.5.tar.gz
+mkdir -p /usr/local/bochs
+mv bochs-2.4.5 /usr/local/bochs/src
+cd /usr/local/bochs/src/
+./configure --prefix=/usr/local/bochs/ && make && make install
+cd -
+
+# mtools
+tar zxvf mtools-4.0.18.tar.gz
+mkdir -p /usr/local/mtools
+mv mtools-4.0.18 /usr/local/mtools/src
+cd /usr/local/mtools/src/
+./configure --prefix=/usr/local/mtools/ && make && make install
+cd -
+
+# Image
+/usr/local/mtools/bin/mcopy -i /var/ftp/pub/linux-0.11-lab/images/grubdos.img /root/github/test_project/linux_0.11/Image ::/boot/myimage
+# menu.lst
+/usr/local/mtools/bin/mcopy -i /var/ftp/pub/linux-0.11-lab/images/grubdos.img /root/github/test_project/env_linux_kernel_0.11/menu.lst ::/boot/grub/
+# .bxrc
+/usr/local/bochs/bin/bochs -f linux0.11.bxrc
+
+# menu.lst
+default 0
+title Linux 0.11
+root (fd0)
+kernel /boot/myimage
+boot
+
+ mount -t minix /var/ftp/pub/linux-0.11-lab/images/rootimage-0.11 /usr/local/bochs/rootimage0.11/ -o loop

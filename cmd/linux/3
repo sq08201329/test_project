@@ -1,0 +1,45 @@
+makewhatis
+
+find / -name filename -exec cmd {} \;      	#cmd filename
+find / -name filename -ok cmd {} \;        	#ask you exec?
+find / -iname keywork				#ignorecase 
+find / ! -group g -user u			#is u not in g
+	-perm +444				#u|g|o>=4
+	-perm -444				#u&g&o>=4
+	-perm 444				# ==4
+
+tar zxvf -C dirname tarfile
+gzip
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$grub.conf$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# NOTICE:  You have a /boot partition.  This means that
+#          all kernel and initrd paths are relative to /boot/, eg.
+#          root (hd0,0)
+#          kernel /vmlinuz-version ro root=/dev/sda2
+#          initrd /initrd-version.img
+#boot=/dev/sda
+default=0
+timeout=10
+password --md5 4f5cea1d5b79c2e2743ac0604fa491f6
+splashimage=(hd0,0)/grub/splash.xpm.gz  # grub-md5-crypt
+hiddenmenu
+title Red Hat Enterprise Linux Server (2.6.18-238.el5)
+	root (hd0,0)  			# as root partion (hd0,0) <==> /boot
+	kernel /vmlinuz-2.6.18-238.el5 ro root=LABEL=/ rhgb quiet 5 #readonly mount /, . option
+	initrd /initrd-2.6.18-238.el5.img
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+rm -f grub.conf
+reboot
+$ root (hd0,0)
+$ kernel /Vmlinuz
+$ initrd /initrd.img
+boot
+
+dd if=/dev/zero of=/dev/sda bs=1 count=446
+insert sysyiso disk
+#shitf +  --> chroot /mnt/sysimg --> grup --> root (hd0,0) | setup (hd0,0)
+grub-install hd0  #shell
+
+shopt -s cdspell
+set -f	#set +f

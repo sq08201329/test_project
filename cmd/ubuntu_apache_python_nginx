@@ -1,0 +1,10 @@
+apt-get install libapache2-mod-python
+
+#/etc/apache2/sites-available/default
+<Location "/">
+                SetHandler python-program
+                PythonHandler django.core.handlers.modpython
+                SetEnv DJANGO_SETTINGS_MODULE blog.settings
+                PythonDebug On
+                #PythonPath "['/root/test_project/python/django_pro/blog', '/usr/local/lib/python2.7/dist-packages/django/bin'] + sys.path"                PythonPath "['/var/www/blog', '/usr/local/lib/python2.7/dist-packages/django/bin'] + sys.path"        
+</Location>

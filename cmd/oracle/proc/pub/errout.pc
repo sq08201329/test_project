@@ -1,0 +1,191 @@
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  FileName               : errout.c                                 %%
+%%                                                                    %%
+%%  SystemName             : 全国邮政储蓄统一版本应用系统             %%
+%%                                                                    %%
+%%  SubSystem              : pub库                                    %%
+%%                                                                    %%
+%%  OS & Environment       : AIX 4.3, ANSI C compiler                 %%
+%%                                                                    %%
+%%  Version                : 2.0                                      %%
+%%                                                                    %%
+%%  Description            :                                          %%
+%%                                                                    %%
+%%  InterFace              :                                          %%
+%%                                                                    %%
+%%  Date           postion         author        description          %%
+%%  ----------------------------------------------------------------- %%
+%%  Oct.01,1995                    Gao Bo        Create               %%
+%%  March 18, 1996                  LN           Modify               %%
+%%  2003/07/22     BeiJing          CYL          版本整理             %%
+%%  2003/07/22     BeiJing          YBSZS        修改errlog errlog.01 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+*/
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  FileName               : errout.c                                 %%
+%%                                                                    %%
+%%  SystemName             : 全国邮政储蓄统一版本应用系统             %%
+%%                                                                    %%
+%%  SubSystem              : pub库                                    %%
+%%                                                                    %%
+%%  OS & Environment       : AIX 4.3, ANSI C compiler                 %%
+%%                                                                    %%
+%%  Version                : 2.0                                      %%
+%%                                                                    %%
+%%  Description            :                                          %%
+%%                                                                    %%
+%%  InterFace              :                                          %%
+%%                                                                    %%
+%%  Date           postion         author        description          %%
+%%  ----------------------------------------------------------------- %%
+%%  Oct.01,1995                    Gao Bo        Create               %%
+%%  March 18, 1996                  LN           Modify               %%
+%%  2003/07/22     BeiJing          CYL          版本整理             %%
+%%  2003/07/22     BeiJing          YBSZS        修改errlog errlog.01 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+*/
+#include <stdio.h>
+#include <unistd.h>
+#include <atmi.h>
+EXEC SQL include sqlca;
+EXEC SQL include sqlda;
+EXEC SQL include    "sysvar.h";
+# ifndef	ERRLOGF
+# define	ERRLOGF		"/log/errlog"
+# endif
+
+#ifdef DAIX
+extern	int	tperrno;
+extern	int	tpurcode;
+#endif
+
+
+void Errout();
+void BErrout();
+/******************************************************************************
+ * Function: Errout()
+ * Action  : 登记错误日志。
+ * Inputs  : 错误类型，柜员号，交易码(tran_no)，错误信息，
+			 出错文件(errfile)，出错行号(errline)，错误号(errno)
+ * Outputs : 无
+ * Return  : 无 
+ ******************************************************************************/
+void
+Errout(type, tlr_no, tran_no, errmsg, errfile, errline, eno)
+    int    type;    /* 错误类型(0-应用错，1-SQL错，2-TUXEDO错，3-系统错) */
+	char * tlr_no;  /* 柜员号 */
+    char * tran_no; /* 交易码 */
+    char * errmsg;  /* 错误信息 */
+    char * errfile; /* 错误发生文件 */
+    int    errline; /* 错误发生行号 */
+    int    eno;     /* 错误号 */
+{
+    FILE * fp;           /* 文件指针 */
+    int    fd;           /* */
+    char   filename[256]; /* LOG文件名 */
+    char   sqlerrmsg[512];
+    int    msglen;
+	char   ctime[80];
+    int    flag = 0;
+
+    memset(filename, 0, 80); /* 初始化内存 */
+	strcpy( filename, getenv("LOGDIR") );
+	strcat( filename, "/");
+
+    switch( type ) /* 根据错误类型取相应的由环境变量指定的LOG文件名 */
+    {
+    case 0:
+		/* app error */
+
+		/* Mod By YBSZS 2003/09/28
+        strcpy(filename, getenv("APPLOGFILE")); 
+		 */
+		strcat( filename, ErrLogFile );
+
+        if (strlen(filename) == 0)
+            fprintf(stderr, "APPLOGFILE not defined.\n");
+        break;
+    case 1:
+		/* sql error */
+        if( strlen(errmsg) == 0 || errmsg == NULL )
+        {
+			memset(sqlerrmsg, 0, sizeof(sqlerrmsg));
+            if( eno == 100 )
+                strcpy(sqlerrmsg, "No matching records found.");
+            else
+            {
+				strncpy(sqlerrmsg, sqlca.sqlerrm.sqlerrmc, sqlca.sqlerrm.sqlerrml);
+            }
+            flag = 1;
+        }
+
+		/* Rem *
+        strcpy(filename, getenv("SQLLOGFILE"));
+		 * Rem */
+
+		strcat( filename, ErrLogFile );
+
+        if (strlen(filename) == 0)
+            fprintf(stderr, "SQLLOGFILE not defined.\n");
+        break;
+    case 2:
+		/* tuxedo error */
+        if( strlen(errmsg) == 0 || errmsg == NULL )
+/**aaa
+			strcpy(errmsg, tpstrerror(tperrno));
+*/
+
+		/* Rem By YBSZS *
+        strcpy(filename, getenv("TUXLOGFILE"));
+		 * Rem By YBSZS */
+
+		strcat( filename, ErrLogFile );
+        if (strlen(filename) == 0)
+            fprintf(stderr, "TUXLOGFILE not defined.\n");
+        break;
+    case 3:
+		/* system error */
+		strcat( filename, ErrLogFile );
+		/* Rem *
+        strcpy(filename, getenv("SYSLOGFILE"));
+		 * Rem */
+        if (strlen(filename) == 0)
+            fprintf(stderr, "SYSLOGFILE not defined.\n");
+        break;
+    default:
+        break;
+    }
+
+    if ((fp = fopen(filename, "a")) == NULL) /* 打开LOG文件 */
+        fprintf(stderr, "Open errlog file error.\n");
+
+    /* 为避免写入混乱将文件加锁 */
+    fd = fileno(fp);
+    lockf(fd, F_LOCK, 0l);
+
+    /* 写入文件 */
+	memset(ctime, 0, sizeof ctime);
+    GetCTime(ctime);
+    fprintf(fp, "#%s |", ctime);
+    fprintf(fp, " Tlr-%s | Tx-%s |", tlr_no, tran_no);
+    fprintf(fp, " \"%s\" | Line:%d\n", errfile, errline);
+    if( flag )
+        fprintf(fp, " %d Sql Error:%s\n", eno, sqlerrmsg);
+    else
+	{
+		if( type == 0 )  
+            fprintf(fp, " %d App Error:%s\n", eno, errmsg);
+		if( type == 1 )  
+            fprintf(fp, " %d Sql Error:%s\n", eno, errmsg);
+		if( type == 2 )  
+            fprintf(fp, " %d Tux Error:%s\n", eno, errmsg);
+		if( type == 3 )  
+            fprintf(fp, " %d Sys Error:%s\n", eno, errmsg);
+    }
+
+    /* 解锁 */
+    lockf(fd, F_ULOCK, 0l);
+    fclose(fp); /* 关闭文件 */
+}

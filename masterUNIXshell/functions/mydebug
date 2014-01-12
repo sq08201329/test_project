@@ -1,0 +1,23 @@
+function debug_true() {
+	export DEBUG=true
+}
+
+function debug_false() {
+	export DEBUG=false
+}
+
+function mydebug() {
+	status=`echo $2 | tr [a-z] [A-Z]`
+	func_name= $1
+	if [ "$DEBUG" == "true" ]
+        then    
+		if [ $# -eq 2 ]
+		then
+			if [ "$status" == "START" ] || [ "$status" == "END" ]
+			then	echo ;echo -n "[`date +%Y-%m-%d" "%T`][`basename $0`][$func_name]" ;echo "debuging $status" ;echo
+			else	echo ;echo "USAGE:$FUNCNAME {func_name} {start|end}" ;echo 	
+			fi
+		else	echo ;echo "USAGE:$FUNCNAME {func_name} {start|end}" ;echo 	
+		fi
+        fi
+}

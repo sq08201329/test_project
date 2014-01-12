@@ -1,0 +1,39 @@
+
+ORACLE XA: Version 11.2.0.1.0. RM name = 'Oracle_XA'.
+
+
+102200.5717.0:
+ORA-01034: ORACLE not available
+ORA-27101: shared memory realm does not exist
+Linux Error: 2: No such file or directory
+
+
+
+102200.5717.0:
+xaolgn: XAER_RMERR; logon failed. ORA-1034.
+
+ORACLE XA: Version 11.2.0.1.0. RM name = 'Oracle_XA'.
+
+
+102201.5724.0:
+ORA-01034: ORACLE not available
+ORA-27101: shared memory realm does not exist
+Linux Error: 2: No such file or directory
+
+
+
+102201.5724.0:
+xaolgn: XAER_RMERR; logon failed. ORA-1034.
+
+ORACLE XA: Version 11.2.0.1.0. RM name = 'Oracle_XA'.
+
+
+102202.5730.0:
+ORA-01034: ORACLE not available
+ORA-27101: shared memory realm does not exist
+Linux Error: 2: No such file or directory
+
+
+
+102202.5730.0:
+xaolgn: XAER_RMERR; logon failed. ORA-1034.

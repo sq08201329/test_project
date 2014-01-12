@@ -1,0 +1,242 @@
+uname -a
+uname --kernel-name --nodename --kernel-release --kernel-version --machine --processor --hardware-platform --operating_system
+uname -s -n -r -v -m -p -i -o
+Linux test.domain.com 2.6.18-238.el5 #1 SMP Sun Dec 19 14:24:47 EST 2010 i686 i686 i386 GNU/Linux
+Linux test.domain.com 2.6.18-238.el5 #1 SMP Sun Dec 19 14:24:47 EST 2010 i686 i686 i386
+info uname
+
+#install another kernel
+rpm -ivh PAE-kernel-2.
+cat /boot/grub/grub.conf
+
+#to see grub argument
+cat /proc/cmdline  
+ro root=LABEL=/ rhgb quiet
+
+#initrd include basic moudle and basic dirver
+ls /boot/initrd-2.6.18-238.el5.img
+# lib modules
+ls /lib/modules/`uname -r`/kernel/net/ipv4/
+#see installed module
+lsmod | grep net
+pcnet32                35141  0 
+mii                     9409  1 pcnet32
+
+# show modules position
+modinfo --file pcnet32                
+/lib/modules/2.6.18-238.el5/kernel/drivers/net/pcnet32.ko
+
+modinfo `lsmod file clumn` #see module info
+
+#detele a mod
+rmmod pcnet32 
+insmod find /lib/modules/`uname -r`/ | grep pcnet32
+
+modprobe #add/uninstall/ a mod 
+modprobe -r #delete a mod
+
+#rebulit a initrd.img
+mkinitrd -f -v --with=ip_gre.ko /boot/initrd.img $(uname -r)
+
+#mod map
+ls /lib/modules/`uname -r`/
+rm -f modules.*
+#rebulit module map --rm all--compile kernel--3-part soft installed
+depmod  
+
+# net card dirver
+vi /etc/modprobe.conf 
+
+lsmod | grep vmxnet
+lsmod | head -n 1
+Module                  Size  Used by
+vmxnet                 23428  0 
+
+# maping
+#disenable ipv4
+cat /proc/sys/net/ipv4/icmp_echo_ignore_all
+#enable
+echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all
+
+#kernel argument ?	
+vi /etc/sysctl.conf 
+# to effect to system stsctl -p # to effect to system right now
+stsctl -p 
+
+/etc/rc.d/rc.sysinit
+/etc/rc.sysinit
+
+
+####device file####
+#device management dynamic device management
+udev
+vi /etc/udev/rules.d/60-net.rules
+
+ls -l /dev/sda
+/dev/sda
+rm -f /dev/sda
+mknod -m 640 /dev/sda b 8 0
+MAKEDEV /dev/sda
+#device mesg major mijor IDE SCSI
+vi /usr/share/doc/MAKEDEV-3.23/devices-2.6+.txt
+
+# rhel 6  netcard
+ls -l /ect/udev/rules.d/70-persistent-net.rules
+ls -l /ect/udev/rules.d/
+
+# to see device kind
+lspci
+
+#hardware browser
+rpm -ivh hwbrowser-0.30-3.el5.noarch.rpm pyparted-1.8.1-4.el5.i386.rpm 
+ hwbrowser
+
+# show 
+lsusb
+Bus 001 Device 001: ID 0000:0000  
+Bus 002 Device 001: ID 0000:0000  
+Bus 002 Device 002: ID 0e0f:0003 VMware, Inc. Virtual Mouse
+Bus 002 Device 003: ID 0e0f:0002 VMware, Inc. Virtual USB Hub
+
+# boot hard ware mesg
+dmesg
+vi /var/log/dmesg
+
+#split partition
+init 6 # reboot os
+fdisk  -l
+fdisk /dev/sdb
+#reload partition table
+partprobe /dev/sdb #rhel 5
+partx -a /dev/sdb #rhel 6
+#format
+mkfs.ext2 /dev/sdb3
+mkfs.ext3 /dev/sdb3
+# avaliable room ext2 bigger than ext3  ,action log  ,scan part of data
+
+#make file system
+mount device dir
+umount device|dir
+e2label device labelname	# add label
+e2label device 			# check
+mount LABEL=labelname /mnt/dir
+#uuid
+blkid /dev/sdb3
+/dev/sdb3: LABEL="sunqi3" UUID="336b7c54-1e41-4e9e-8a19-97f42500f558" SEC_TYPE="ext2" TYPE="ext3" 
+mount uuid="" /dir
+
+#mount option
+mount -o loop|ro|rw|usrquota|grpquota|acl|_netdev -type iso9600  isofile dir
+-o loop # local file
+
+#device mountpoint type option check backup
+cat /etc/fstab
+#device          mount point	 type     option	backup	check
+/root/sw.file		swap     swap	defaults	0 	0
+LABEL=
+UUID=
+*.iso				 iso8600 defaults,loop
+#reread /etc/fstab newline
+mount -a 
+mount -o remount /mnt
+
+#dirty data
+#warning  --umoount first
+umount /mnt/sdb3
+fsck -F /dev/sdb3
+e2fsck
+# to see filesystem stat clean |dirty
+dump2fs  
+tune2fs -l device
+
+#extend sweap room
+set partion sys id=82
+mkswap /dev/sdb11
+/etc/fstab
+swapon -a # active
+swapon -s
+#umount swap
+swapoff -a
+/ect/fstab
+swapon -a
+swapon -s
+#file swap
+dd if=/dev/zero of=/test/sw.file bs=1M count=100
+mkswap sw.file
+swapon -a
+swapon -s
+
+
+raid 0 1 5 group
+dmraid -r
+#soft
+mdadm -D /dev/md0
+mdadm -C /dev/md0 -l 5 -n 4 -x 1 /dev/sdb{5,6,7,8,9}
+mkfs.ext3 /dev/md0
+mount /dev/md0 /mnt
+
+# make fault
+mdadm /dev/md0 -f /dev/sda8
+# add 
+mdadm /dev/md0 -a /dev/sdb10
+# remove
+mdadm /dev/md0 -r /dev/sdb8
+
+# add a active disk
+mdadm -G /dev/md0 -n 5
+
+# sdb8 supper block use for other thing
+mdadm --zero-superblock /dev/sdb12
+
+# 开机启动
+cat /etc/rc.d/rc.sysinit | grep mdadm
+	if [ -f /etc/mdadm.conf ]; then
+	    /sbin/mdadm -A -s
+mdadm -Ds > /etc/mdadm.conf
+/dev/md0  # /etc/fstab
+
+# delete /dev/md0
+mdadm /dev/md0 -f /dev/sdb10 -r /dev/sdb10
+...
+mdadm --stop /dev/md0
+mdadm --remove /dev/md0
+
+# network
+/etc/sysconfig/network-scripts/ifcfg-eth0
+DEVICE=eth0
+BOOTPROTO=none | dhcp | static
+ONBOOT=yes
+HWADDR=00:0c:29:38:01:5e
+#IPADDR
+#NETMASK   <==> PREFIX=24
+#GATEWAY
+#TYPE=Ethernet
+DNS1=202.106.0.20
+DNS2
+
+/etc/resolv.conf #dns
+nameserver 202.106.0.20 
+
+/etc/sysconfig/network
+GATEWAY=
+
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.168.43.1
+route del -net 0.0.0.0 netmask 0.0.0.0 gw 192.168.43.1
+
+
+mii-tool
+ 
+ifconfig -a
+ip address show
+
+system-config-network
+traceroute 192.168.1.124
+cat /etc/hosts
+host www.baidu.com
+
+dig
+nslookup
+wget  hkttp://www.baidu.com/index
+elinks
+
+lsmod | egrep --color "ip_tables | ip_nat_ftp | ip_conntrack_ftp"

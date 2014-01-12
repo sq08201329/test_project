@@ -1,0 +1,897 @@
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  ProgramName            : dateproc.pc                              %%
+%%                                                                    %%
+%%  SystemName             : 全国邮政储蓄统一版本应用系统             %%
+%%                                                                    %%
+%%  SubSystem              : pub库                                    %%
+%%                                                                    %%
+%%  OS & Environment       : AIX 4.3, ANSI C compiler, oracle proc    %%
+%%                                                                    %%
+%%  Version                : 2.0                                      %%
+%%                                                                    %%
+%%  Description            :                                          %%
+%%                                                                    %%
+%%  InterFace              :                                          %%
+%%                                                                    %%
+%%  Date           postion         author        description          %%
+%%  ----------------------------------------------------------------- %%
+%%  2002/03/21     BeiJing         Leo           Create               %%
+%%  2003/07/24     BeiJing         hjh           Adapt                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <time.h>
+#include <math.h>
+#include <string.h>
+#include <strings.h>
+#include <errno.h>
+#include "sqltypes.h"
+
+EXEC SQL INCLUDE sqlca.h;
+
+#define   DATETIME_LEN 	      20
+#define   ERR_YEAR 	          -1841
+#define   ERR_MONTH	          -1843
+#define   ERR_DAY		      -1847
+#define   SQLCODE 		      sqlca.sqlcode
+
+typedef   char                DATETIME[20];
+
+char   BASE_DATE[] = {"1899/12/31"};
+char   BASE_FMT[] = {"YYYY/MM/DD"};
+char   DATETIME_FMT[] = {"YYYY-MM-DD HH24:MI:SS"};
+
+/*
+ *函数名     : dstol()
+ *输入项     ：char datestr      日期字符串 
+ *输出项     ：long *datelong     long型日期值
+ *返回值     : 0                 转换成功
+ *           : 其他(sqlcode)     转换失败   
+ *函数功能   ：将字符串型的日期值转换为长整型值
+ *程序员     : Leo
+ *时间       : 2002/03/23
+ */
+long
+dstol( char datestr[9], long *datelong )
+{
+    EXEC SQL BEGIN DECLARE SECTION;
+       long    out_date;
+    EXEC SQL END DECLARE SECTION;
+	   long    originalSQLCODE=SQLCODE;
+	   long    returnCode;
+
+	   out_date = -1;
+	   datestr[8] = '\0'; 
+
+	   EXEC SQL SELECT TO_DATE( :datestr, 'YYYYMMDD' ) -
+					   TO_DATE( :BASE_DATE, :BASE_FMT )
+				 INTO :out_date
+				 FROM DUAL;
+
+	   returnCode = SQLCODE;
+	   SQLCODE = originalSQLCODE;
+	   if( returnCode != 0 )
+		   return( returnCode );
+
+	   *datelong = out_date;
+	   return( 0 );
+}
+/*
+ *函数名     : rfmtdate()
+ *输入项     ：long p_date       long型日期值
+ *           : char *date_fmt    日期格式
+ *输出项     ：char *dat_buf     日期字符串 
+ *返回值     : 0                 转换成功
+ *           : 其他(sqlcode)     转换失败   
+ *函数功能   ：将long型日期值按指定格式转换为日期字符串
+ *程序员     : Leo
+ *时间       : 2002/03/29
+ */
+long
+rfmtdate( long p_date, char * date_fmt, char * dat_buf )
+{
+EXEC SQL BEGIN DECLARE SECTION;
+  long         in_date;
+  char         in_fmt[ 81 ];
+  char         out_buf[ 11 ];
+EXEC SQL END DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+
+  in_date = p_date;
+  strcpy( in_fmt, date_fmt );
+
+  memset( out_buf, 0x00, sizeof( out_buf ) );
+
+  EXEC SQL SELECT
+           TO_CHAR( TO_DATE( '1899/12/31', 'YYYY/MM/DD' ) + :in_date, :in_fmt )
+             INTO :out_buf
+             FROM DUAL;
+
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+  if( returnCode != 0 )
+      return( returnCode );
+
+  rtrim( out_buf );
+  strcpy( dat_buf, out_buf );
+  return( 0 );
+}
+
+
+/*
+ *函数名     : rdefmtdate()
+ *输入项     ：char *dat_buf     日期字符串 
+ *           : char *date_fmt    日期格式
+ *输出项     ：long *p_date      long型日期值
+ *返回值     : 0                 转换成功
+ *           : 其他(sqlcode)     转换失败   
+ *函数功能   ：将字符串型的日期按指定格式转换为 long 型
+ *程序员     : Leo
+ *时间       : 2002/03/29
+ */
+long
+rdefmtdate( long * p_date, char * date_fmt, char * dat_buf )
+{
+EXEC SQL BEGIN DECLARE SECTION;
+  long         out_date;
+  char         in_fmt[ 81 ];
+  char         in_buf[ 81 ];
+EXEC SQL END DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+
+  strcpy( in_fmt, date_fmt );
+  strcpy( in_buf, dat_buf );
+
+  /**del by yp 20051123***
+  if (*p_date == 0)
+  {
+      dat_buf[0] = " ";	
+	  return (0);
+  }
+  **del by yp 20051123 END***/
+
+  out_date = -1;
+
+  EXEC SQL SELECT
+             TO_DATE( :in_buf, :in_fmt ) -
+             TO_DATE( :BASE_DATE, :BASE_FMT )
+             INTO :out_date
+             FROM DUAL;
+
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+  if( returnCode != 0 )
+      return( returnCode );
+
+  * p_date = out_date;
+  return( 0 );
+}
+
+
+/*
+ *函数名     : dtcvasc()
+ *输入项     ：char    *cDateTime       日期字符串 
+ *输出项     ：DATETIME    *DateTime    到秒的日期值
+ *返回值     : 0                        转换成功
+ *           : 其他(sqlcode)            转换失败   
+ *函数功能   ：将字符串型的时间转换为到秒的DATETIME值
+ *程序员     : Leo
+ *时间       : 2002/03/29
+ */
+long
+dtcvasc( char *cDateTime, DATETIME 	*DateTime )
+{
+EXEC SQL BEGIN DECLARE SECTION;
+  char		cDT[ DATETIME_LEN ];
+  DATETIME 	DT;
+EXEC SQL END DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+
+  memcpy( cDT, cDateTime, sizeof( cDT ) );
+
+  EXEC SQL SELECT TO_CHAR( 
+			   TO_DATE( :cDT, :DATETIME_FMT ),
+			   :DATETIME_FMT
+                         )
+	   INTO   :DT
+	   FROM   DUAL;
+  
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+  if( returnCode != 0 )
+      return( returnCode );
+
+
+  memcpy( *DateTime, DT, sizeof( DT ) );
+  return( 0 );
+
+}
+
+
+/*
+ *函数名     : rleapyear()
+ *输入项     ：char    *cDateTime       日期字符串 
+ *输出项     ：DATETIME    *DateTime    long型日期值
+ *返回值     : 0                        不是闰年
+ *           : 1                        是闰年
+ *函数功能   ：输入年份判断是否为润年
+ *程序员     : Leo
+ *时间       : 2002/03/29
+ */
+long
+rleapyear( long year )
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+	char Year[11];
+    long dump;
+  EXEC SQL END   DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+
+  memset(Year, 0, sizeof(Year));
+
+  sprintf( Year, "%04d0229", year );
+
+  EXEC SQL SELECT TO_DATE( :Year, 'YYYYMMDD' )-TO_DATE('18991231','YYYYMMDD')
+           INTO   :dump 
+	       FROM   DUAL;
+
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+
+  if( returnCode != 0 )
+      return( 0 );
+  
+  return( 1 );
+
+}
+
+
+/*
+ *函数名     : rdatestr()
+ *输入项     ：long    *jdate           long型日期值
+ *输出项     ：char    *outbuf          转换的字符串
+ *返回值     : 0                        转换成功 
+ *           : !=0                      转换失败 
+ *函数功能   ：将long型日期按标准格式转换为字符串
+ *程序员     : Leo
+ *时间       : 2002/03/29
+ */
+long
+rdatestr( long jdate, char *outbuf )
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+	long days;
+	char dstr[ 11 ];
+  EXEC SQL END DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+   
+  days = jdate;
+
+  EXEC SQL SELECT TO_CHAR( 
+			TO_DATE( :BASE_DATE, :BASE_FMT ) + :days ,
+		        :BASE_FMT )
+	   INTO   :dstr
+	   FROM   DUAL;
+
+
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+  if( returnCode != 0 )
+	switch( returnCode ){
+		case ERR_YEAR: 
+		case ERR_MONTH:
+		case ERR_DAY: return( -1212 );
+		default: return( -1 );
+	}
+
+	
+  strcpy( outbuf, dstr );
+  return( 0 );
+
+}
+/*** aer add 20020426 ***/
+/*函数名     :rstrdate1()
+ *输入项     ：char    *str             转换的字符串
+ *输出项     ：long    *jdate           long型日期值
+ *返回值     : 0                        转换成功 
+ *           : !=0                      转换失败 
+ *函数功能   ：将char型日期按MMDDYYYY格式转换为字符串 
+ *程序员     : aer 
+ *时间       : 2002/04/25
+ */
+long
+rstrdate1( char *str, long *jdate )
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+	long days;
+	char dstr[11];
+  EXEC SQL END DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+   
+  memcpy( dstr, str, sizeof( dstr ) );
+
+  EXEC SQL SELECT TO_DATE( :dstr, 'YYYYMMDD' ) -
+				  TO_DATE( :BASE_DATE, :BASE_FMT )
+	   INTO   :days
+	   FROM   DUAL;
+
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+  if( returnCode != 0 )
+      return( returnCode );
+	
+  *jdate = days;
+  return( 0 );
+
+}
+
+/*
+ *函数名     : rstrdate()
+ *输入项     ：char    *str             转换的字符串
+ *输出项     ：long    *jdate           long型日期值
+ *返回值     : 0                        转换成功 
+ *           : !=0                      转换失败 
+ *函数功能   ：将char型日期按MMDDYYYY格式转换为字符串 
+ *程序员     : Leo 
+ *时间       : 2002/03/29
+ */
+
+long
+rstrdate( char *str, long *jdate )
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+	long days;
+	char dstr[ 11 ];
+  EXEC SQL END DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+   
+  memcpy( dstr, str, sizeof( dstr ) );
+
+  EXEC SQL SELECT TO_DATE( :dstr, 'MMDDYYYY' ) -
+				  TO_DATE( :BASE_DATE, :BASE_FMT )
+	   INTO   :days
+	   FROM   DUAL;
+
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+  if( returnCode != 0 )
+      return( returnCode );
+	
+  *jdate = days;
+  return( 0 );
+
+}
+
+/*
+ *函数名     : rmdyjul()
+ *输入项     ：short  mdy        日期数组
+ *输出项     ：long  jdate       long型日期 
+ *返回值     : 0                 转换成功
+ *           : 其他(sqlcode)     转换失败   
+ *函数功能   ：将日期数组转换为long型的日期值
+ *程序员     : Leo
+ *时间       : 2002/03/23
+ */
+long
+rmdyjul( short mdy[ 3 ], long *jdate)
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+	char dstr[ 11 ];
+	long ldate;
+  EXEC SQL END   DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+
+
+  sprintf( dstr, "%04d/%02d/%02d", mdy[2], mdy[0], mdy[1] );
+
+  EXEC SQL SELECT TO_DATE(:dstr, :BASE_FMT ) - TO_DATE( :BASE_DATE, :BASE_FMT )
+	   INTO   :ldate
+	   FROM   DUAL;
+
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+  if( returnCode != 0 )
+	switch( returnCode ){
+
+		case ERR_YEAR:  return( -1204 );
+		case ERR_MONTH: return( -1205 );
+		case ERR_DAY:   return( -1206 );
+
+		default:  return( -1 );
+	}
+
+
+  *jdate = ldate;
+  return( 0 );
+
+}
+
+
+/*
+ *函数名     : rjulmdy()
+ *输入项     ：long  jdate       long型日期 
+ *输出项     ：short  mdy        日期数组
+ *返回值     : 0                 转换成功
+ *           : 其他(sqlcode)     转换失败   
+ *函数功能   ：将日期(long)转换为日期数组
+ *程序员     : Leo
+ *时间       : 2002/03/23
+ */
+long
+rjulmdy( long jdate, short mdy[ 3 ] )
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+	char dstr[ 9 ];
+	long ldate;
+  EXEC SQL END   DECLARE SECTION;
+  long         originalSQLCODE=SQLCODE;
+  long         returnCode;
+  
+  ldate = jdate;
+
+
+  EXEC SQL SELECT 
+           TO_CHAR( TO_DATE( :BASE_DATE, :BASE_FMT ) + :ldate, 'YYYYMMDD')
+	   INTO   :dstr
+	   FROM   DUAL;
+
+  returnCode = SQLCODE;
+  SQLCODE = originalSQLCODE;
+  if( returnCode != 0 )
+	switch( returnCode ){
+
+		case ERR_YEAR: 
+		case ERR_MONTH:
+		case ERR_DAY:   return( -1210 );
+
+		default:  return( returnCode );
+	}
+
+  mdy[ 1 ] = atoi( dstr + strlen( dstr ) - 2 );
+
+  dstr[ 6 ] = 0x00;
+  mdy[ 0 ] = atoi( dstr + strlen( dstr ) - 2 );
+
+
+  dstr[ 4 ] = 0x00;
+  mdy[ 2 ] = atoi( dstr );
+
+  return( 0 );
+
+}
+
+/*
+ *函数名     : dttofmtasc()
+ *输入项     ：char    *from            日期字符串 
+ *           : int     len              长度
+ *           : char    *fmt             转换格式
+ *输出项     ：char    *to              转换后的字符串日期值
+ *返回值     : 0                        转换成功
+ *           : 其他(sqlcode)            转换失败   
+ *函数功能   ：把DATETIME类型转换为格式化的字符串
+ *程序员     : Leo
+ *时间       : 2002/03/30
+ */
+long
+dttofmtasc( char *from, char *to, long len, char *fmt )
+{
+    EXEC SQL BEGIN DECLARE SECTION;
+        char  instr[15];
+		char  outstr[22];
+		char  fmtstr[81];
+    EXEC SQL END  DECLARE SECTION;
+
+		long  orignalSQLCODE=SQLCODE;
+		long  returncode;
+
+    memset( instr, 0x00, sizeof( instr ) );
+	memset( fmtstr, 0x00, sizeof( fmtstr ) );
+
+    memcpy(	instr, from, sizeof(instr) );
+    memcpy(	fmtstr, fmt, sizeof(fmtstr) );
+
+	EXEC SQL SELECT TO_CHAR( TO_DATE( :instr, 'YYYYMMDDHH24MISS' ), :fmtstr )
+					INTO  :outstr
+					FROM  DUAL;
+    returncode = SQLCODE;
+	SQLCODE = orignalSQLCODE;
+	if( returncode != 0 )
+		return( returncode );
+
+    memcpy( to, outstr, sizeof(outstr) );
+
+	return( 0 );
+}
+
+/***
+ *将INTERVAL型值按指定格式转换成ANSI兼容的字符串
+ **/
+long
+intofmtasc( char *from, char *to, long len, char *fmt )
+{
+    EXEC SQL BEGIN DECLARE SECTION;
+        char  instr[15];
+		char  outstr[22];
+		char  fmtstr[81];
+    EXEC SQL END  DECLARE SECTION;
+
+		long  orignalSQLCODE=SQLCODE;
+		long  returncode;
+
+    memcpy(	instr, from, sizeof(instr) );
+    memcpy(	fmtstr, fmt, sizeof(fmtstr) );
+
+	EXEC SQL SELECT TO_CHAR( TO_DATE( :instr, :fmtstr), :fmtstr )
+					INTO  :outstr
+					FROM  DUAL;
+    returncode = SQLCODE;
+	SQLCODE = orignalSQLCODE;
+	if( returncode != 0 )
+		return( returncode );
+
+    memcpy( to, outstr, sizeof(outstr) );
+
+	return( 0 );
+}
+
+/***
+ *将指定格式ANSI兼容的字符串转换成INTERVAL型值
+**/
+
+long
+incvfmtasc( char *from, char *fmt, char *to )
+{
+    EXEC SQL BEGIN DECLARE SECTION;
+        char  instr[15];
+		char  outstr[22];
+		char  fmtstr[81];
+    EXEC SQL END  DECLARE SECTION;
+
+		long  orignalSQLCODE=SQLCODE;
+		long  returncode;
+
+    memcpy(	instr, from, sizeof(instr) );
+    memcpy(	fmtstr, fmt, sizeof(fmtstr) );
+
+	EXEC SQL SELECT TO_CHAR( TO_DATE( :instr, :fmtstr), :fmtstr )
+					INTO  :outstr
+					FROM  DUAL;
+
+    returncode = SQLCODE;
+
+	SQLCODE = orignalSQLCODE;
+	if( returncode != 0 )
+		return( returncode );
+
+    memcpy( to, outstr, sizeof(outstr) );
+
+	return( 0 );
+}
+
+/* 
+* 根据数据库错误号(oerr ora 'err_no') 获取相应的错误信息
+*/
+long rgetmsg( long msgnum , char * msgstr, long lenmsgstr )
+{
+  char CommandLine[ 256 ];
+  char filename[ 80 ];
+  FILE *errfile;
+
+  if( msgnum < 0 ) msgnum = - msgnum;
+  sprintf( filename, "%s/tmp/oerrora.%d", getenv( "HOME" ), time( 0 ) );
+
+  sprintf( CommandLine, 
+	   "oerr ora  %d | head -n1 | awk -F\\\" \'{print $2}\'>%s",
+	   msgnum, filename );
+  system( CommandLine );
+   
+  memset( msgstr, 0x00, lenmsgstr);
+  if( (errfile = fopen( filename , "r" ) ) == NULL ){
+  	strncpy( msgstr, "Can not open errfile", lenmsgstr );
+	return( -1227 );
+  }
+
+  if( fgets( msgstr, lenmsgstr, errfile ) == NULL ){
+  	strncpy( msgstr, "Can not find error", lenmsgstr );
+	return( -1228 );
+  }
+
+  fclose( errfile );
+
+
+  sprintf( CommandLine, "rm -f %s", filename );
+  system( CommandLine );
+  return ( 0 );
+
+}
+
+
+/**计算两个datetime型变量之间的差值，到秒*/
+long
+dtsub( char *time2, char *time1, char *inv)
+{
+EXEC SQL BEGIN DECLARE SECTION;
+  char sDate1[11]; 
+  char sDate2[11]; 
+  long  iDay;
+EXEC SQL END DECLARE SECTION;
+  char sTime1[9];
+  char sTime2[9];
+  char sTmp[3];
+  long lGap;
+  long  iSec1, iSec2;
+
+  long  orignalSQLCODE=sqlca.sqlcode;
+  long  returncode;
+
+  iDay = 0;
+  iSec1 = 0;
+  iSec2 = 0;
+
+  memset( sDate1 , 0 , 11 );
+  memset( sDate2 , 0 , 11 );
+  memset( sTime1 , 0 , 9 );
+  memset( sTime2 , 0 , 9 );
+  memset( sTmp , 0 , 3 );
+
+/*** Modified by DM. ***
+  memcpy( sDate1, *time1, 10 );
+  memcpy( sDate2, *time2, 10 );
+
+  memcpy( sTmp, *time1 + 11, 2 );
+*** 04.05.2002 ***/
+  memcpy( sDate1, time1, 10 );
+  memcpy( sDate2, time2, 10 );
+
+  memcpy( sTmp, time1 + 11, 2 );
+
+
+  iSec1 = atoi(sTmp)*3600;
+
+/*** Modified by DM. ***
+  memcpy( sTmp, *time1 + 14, 2 );
+*** 04.05.2002 ***/
+  memcpy( sTmp, time1 + 14, 2 );
+
+  iSec1 = atoi(sTmp)*60 + iSec1;
+
+/*** Modified by DM. ***
+  memcpy( sTmp, *time1 + 17, 2 );
+*** 04.05.2002 ***/
+  memcpy( sTmp, time1 + 17, 2 );
+
+  iSec1 = atoi(sTmp) + iSec1;
+
+/*** Modified by DM. ***
+  memcpy( sTmp, *time2 + 11, 2 );
+*** 04.05.2002 ***/
+  memcpy( sTmp, time2 + 11, 2 );
+
+  iSec2 = atoi(sTmp)*3600;
+/*** Modified by DM. ***
+  memcpy( sTmp, time2 + 14, 2 );
+*** 04.05.2002 ***/
+
+  iSec2 = atoi(sTmp)*60 + iSec2;
+/*** Modified by DM. ***
+  memcpy( sTmp, *time2 + 17, 2 );
+*** 04.05.2002 ***/
+  memcpy( sTmp, time2 + 17, 2 );
+
+  iSec2 = atoi(sTmp) + iSec2;
+
+  EXEC SQL SELECT   TO_DATE(:sDate2,'YYYY-MM-DD') - \
+ 				 	TO_DATE(:sDate1,'YYYY-MM-DD') 
+		INTO :iDay
+  FROM DUAL;
+
+  
+  sqlca.sqlcode = orignalSQLCODE;
+
+  if( returncode != 0 )
+    return( returncode );
+
+/*** Modified by DM. ***
+  lGap = iDay * 86400 + (iSec2 - iSec1)  
+  sprintf( *inv , "%d" , lGap ); 
+*** 04.05.2002 ***/
+  lGap = iDay * 86400 + (iSec2 - iSec1);
+  sprintf( inv , "%d" , lGap ); 
+
+  return 0;
+}
+
+/***
+ *将INTERVAL型值inv累加到from得到 to
+ **/
+
+/*
+ *函数名     : dtaddinv()
+ *输入项     ：char *from	原始日期时间 YYYYMMDDHHMMSS
+ *             char *inv  	间隔日期时间 YYYYMMDDHHMMSS 
+ *			   char *to		结果日期时间 YYYYMMDDHHMMSS
+ *输出项     ：0            处理正常 
+ *             -1           处理失败 
+ *函数功能   ：将INTERVAL型值inv累加到from得到 to
+ *程序员     : zjf
+ *时间       : 2002/05/20
+ */
+long
+dtaddinv( char *from, char *inv, char *to )
+{
+	char fdate[9];
+	char ftime[7];
+	char invdate[9];
+	char invtime[7];
+	long ret;
+	long fdatelong;
+	long tdatelong;
+	long  sec, min, hour;
+	long  day, month, year;
+	long add;
+	char buf_1[5];
+	char buf_2[5];
+	char buf_year[5];
+	char buf_month[3];
+	char buf_day[3];
+	char buf_hour[3];
+	char buf_min[3];
+	char buf_sec[3];
+	FILE *fp;
+
+/*	fp = fopen( "zjf.txt", "w" );*/
+	
+	memcpy( fdate, from, 8 );
+	fdate[8]='\0';
+	memcpy( invdate, inv, 8 );
+	invdate[8]='\0';
+
+	memset( ftime, 0, sizeof(ftime) );
+	if( strlen( from ) > 8 ){
+		memcpy( ftime, from + 8, 6 );
+		ftime[6] = '\0';
+	}
+	/*fprintf( fp, "inv %s \n", inv );*/
+
+	memset( invtime, 0, sizeof(invtime));
+	if( strlen( inv) > 8 ){
+		memcpy( invtime, inv + 8, 6 );
+		invtime[6] = '\0';
+	}
+	/* fprintf( fp, "dstol fdate %s invtime %s\n", fdate, invtime); */
+	ret = dstol( fdate,  &fdatelong );
+	/*fprintf( fp, "dstol ret %ld  fdatelong %ld\n", ret, fdatelong);*/
+	if( ret != 0 ){
+    /*	fclose(fp); */
+		return( -1 );
+	}
+
+
+	/* 秒相加 */
+	memcpy( buf_1, ftime + 4, 2);
+	buf_1[2] = '\0';
+	memcpy( buf_2, invtime + 4, 2);
+	buf_2[2] = '\0';
+	sec  = (atoi(buf_1) + atoi(buf_2)) % 60; 
+	add  = (atoi(buf_1) + atoi(buf_2)) / 60; 
+
+	/* 分相加 */
+	memcpy( buf_1, ftime + 2, 2);
+	buf_1[2] = '\0';
+	memcpy( buf_2, invtime + 2, 2);
+	buf_2[2] = '\0';
+	min  = (atoi(buf_1) + atoi(buf_2) + add ) % 60; 
+	add  = (atoi(buf_1) + atoi(buf_2) + add ) / 60; 
+
+    /* 小时相加 */
+	memcpy( buf_1, ftime, 2);
+	buf_1[2] = '\0';
+	memcpy( buf_2, invtime, 2);
+	buf_2[2] = '\0';
+	hour = (atoi(buf_1) + atoi(buf_2) + add ) % 24; 
+/*	fprintf( fp, "buf_1 %s buf_2 %s hour %d\n", buf_1, buf_2,hour ); */
+	add  = (atoi(buf_1) + atoi(buf_2) + add ) / 24; 
+
+	/* 天相加 */
+	tdatelong = fdatelong + add + atol( &invdate[6] );
+	ret = rfmtdate( tdatelong, "YYYYMMDD", to );
+/*	fprintf( fp, "to%s add %d\n", to ,add);*/
+	if( ret != 0 ){
+/*		fclose(fp); */
+		return( -1 );
+
+	}
+
+	/* 月相加 */
+	memcpy( buf_1, to + 4, 2);
+	buf_1[2] = 0;
+	memcpy( buf_2, invdate + 4, 2); 
+	buf_2[2] = 0;
+
+	month = atoi( buf_1 ) + atoi( buf_2 );
+	if( month > 12 )
+		month = month%12;
+	add   = (atoi( buf_1 ) + atoi( buf_2 )) / 12;
+
+	/* 年相加  */
+	memcpy( buf_1, to, 4);
+	buf_1[4] = 0;
+	memcpy( buf_2, invdate, 4); 
+	buf_2[4] = 0;
+	year  = atoi(buf_1)+ atoi(buf_2) + add;
+	sprintf( buf_1, "%d", year );
+	buf_1[4] = '\0';
+
+	memcpy( buf_2, to+6, 2 );
+	buf_2[2] = '\0';
+	day = atoi( buf_2 );
+/*	fprintf( fp, "befor conv day %d buf_2 %s \n", day ) ; */
+
+	if( month == 2 ){
+		if( ISLEAPYEAR( buf_2 ) == 1  ){
+			day = day%29 ;
+			month += day/29 ;
+		}else{
+			day = day%28 ;
+			month += day/28 ;
+		}
+	}else if( month == 1 || month == 3 || month == 5 || month == 7 ||
+			  month == 8 || month == 10 || month == 12 ){
+		day = day%31 ;
+		month += day/31;
+    }else {
+		day = day%30 ;
+		month += day/30;
+	}
+	if (day == 0 )
+		day = 1;
+	if( month > 12 ){
+		month = month%12 + 1;
+		year +=  month/12; 
+	}
+	sprintf( buf_year, "%d", year );
+
+	if( month > 10 )
+		sprintf( buf_month, "%d", month );
+	else
+		sprintf( buf_month, "0%d", month );
+
+	if( day > 10 )
+		sprintf( buf_day, "%d", day );
+	else
+		sprintf( buf_day, "0%d", day );
+		
+	if( hour > 10 )
+		sprintf( buf_hour, "%d", hour );
+	else
+		sprintf( buf_hour, "0%d", hour );
+	if( min > 10 )
+		sprintf( buf_min, "%d", min );
+	else
+		sprintf( buf_min, "0%d", min );
+	if( sec > 10 )
+		sprintf( buf_sec, "%d", sec );
+	else
+		sprintf( buf_sec, "0%d", sec );
+	/* 最终结果 */
+/*	fprintf(fp, "buf_year %s buf_month %s buf_day %s \n buf_hour %s buf_min   %s buf_sec\n", buf_year, buf_month, buf_day, buf_hour, buf_min,buf_sec);*/
+	sprintf( to, "%s%s%s%s%s%s", buf_year, buf_month, 
+					buf_day, buf_hour, buf_min, buf_sec);
+
+/*		fprintf(fp, "the result is to =[%s]", to); */
+
+/*    fclose(fp); */
+    return 0;
+}

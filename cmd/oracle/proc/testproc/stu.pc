@@ -1,0 +1,38 @@
+#include "../include/public.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+EXEC SQL INCLUDE SQLCA;
+int main()
+{
+	EXEC SQL BEGIN DECLARE SECTION;
+		int empno;
+		int DEPTNO;
+	EXEC SQL END DECLARE SECTION;
+
+	db_conn();
+	printf("please input a empno:");
+	scanf("%s", &empno);
+	EXEC SQL WHENEVER NOT FOUND DO break;
+	EXEC SQL DECLARE stu_cursor CURSOR FOR
+		SELECT EMPNO, DEPTNO from emp where empno=:empno;
+
+	EXEC SQL OPEN stu_cursor;
+	while(1)
+	{
+		EXEC SQL FETCH stu_cursor INTO:empno,:DEPTNO;
+		if(sqlca.sqlcode)
+		{
+			printf("fetch cursor error!");
+			exit(-1);
+		}
+		/*long CBSLog(char * filename, char * fmt, ...);*/
+		CBSLog("1.log", "empno=%s DEPTNO=%s\n", empno, DEPTNO);
+		/*printf("empno=%s DEPTNO=%s\n", empno, DEPTNO);*/
+	}
+
+	EXEC SQL CLOSE stu_cursor;
+	EXEC SQL COMMIT WORK RELEASE;
+
+	return 0;
+}	

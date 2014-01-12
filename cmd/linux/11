@@ -1,0 +1,30 @@
+# kickstart
+# /etc/dhcpd.conf
+	allow bootp;
+	allow booting;
+	{next-server 192.168.1.124;
+	 filename "pxelinux.0";}
+
+#/tftpboot
+vmlinuz		#isolinux
+initrd.img	#isolinux
+pxelinux.0	#rmp -ql syslinux | grep pxelinux
+mkdir /tftpboot/pxelinux.cfg
+cp isolinux.cfg /tftpboot/pxelinux.cfg/default
+chmod u+w /tftpboot/pxelinux.cfg/default
+	append ks=nfs:192.168.1.124:/rhel/ks.cfg initrd=initrd.img
+chmod u-w /tftpboot/pxelinux.cfg/default
+
+mkdir /rhel
+mkdir /install
+
+#nfs
+# /etc/exports
+	/rhel		*(ro,sync)
+	/install	*(ro,sync)
+exportfs -rv
+
+chmod -R 777 /rhel
+chmod -R 777 /install
+	
+

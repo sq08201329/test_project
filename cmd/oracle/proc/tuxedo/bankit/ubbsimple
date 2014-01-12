@@ -1,0 +1,68 @@
+#	(c) 2003 BEA Systems, Inc. All Rights Reserved.
+#ident	"@(#) samples/atmi/simpapp/ubbsimple	$Revision: 1.5 $"
+
+#Skeleton UBBCONFIG file for the TUXEDO Simple Application.
+#Replace the <bracketed> items with the appropriate values.
+
+*RESOURCES
+IPCKEY	 	233333
+
+#Example:
+#IPCKEY		123456
+
+DOMAINID	simpapp
+MASTER		simple
+MAXACCESSERS	10
+MAXSERVERS	5
+MAXSERVICES	10
+MODEL		SHM # MP
+#OPTION		LAN,MIGRATE
+#SCANUNIT	#5|10|15...default 10
+#SANTIYSCAN	#SCANUNIT*12 secones check once
+#BLOCKTIME
+
+LDBAL		N #Y
+#MAXCONV		#0-32768 default 10
+#NOTIFY		#IGNORE|SIGNAL|DIPIn
+
+*MACHINES
+	"test.domain.com"		LMID=simple
+	APPDIR="/home/oracle/proc/tuxedo/bankit"
+	TUXCONFIG="/home/oracle/proc/tuxedo/bankit/simpletux"
+	TUXDIR="/home/tuxedo/tuxedo10gR3"
+
+	TLOGDEVICE="/home/oracle/proc/tuxedo/bankit/TLOG"
+	TLOGNAME=TLOG
+	TLOGSIZE=200
+
+	MAXWSCLIENTS=5
+
+#Example:
+#		APPDIR="/home/me/simpapp"
+#		TUXCONFIG="/home/me/simpapp/tuxconfig"
+#		TUXDIR="/usr/tuxedo"
+
+#<Machine-name>	LMID=simple
+
+#Example:
+#ENVFILE=""
+#TYPE 
+#ULOGPFX
+
+*GROUPS
+GROUP1
+	LMID=simple	GRPNO=1	
+	#OPENINFO=NONE
+	#OPENINFO="Oracle_XA:Oracle_XA+Acc=P/scott/The_sunqi+SqlNet=server+SesTm=600+MaxCur=600+MaxCur=5+LogDir=."
+	OPENINFO="Oracle_XA:Oracle_XA+Acc=P/scott/The_sunqi+SesTm=600+MaxCur=600+MaxCur=5+LogDir=."
+	TMSNAME="TMS_ORA" TMSCOUNT=2
+
+*SERVERS
+DEFAULT:
+		CLOPT="-A"
+
+test	SRVGRP=GROUP1 SRVID=1
+"WSL"	SRVGRP=GROUP1 SRVID=1116 CLOPT="-A -- -n //172.29.22.50:8888 -m 2 -M 5 -x 6"
+
+*SERVICES
+TEST

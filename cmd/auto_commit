@@ -1,0 +1,4 @@
+#cd /root/test_project/;git add .;git commit -am "crontab commit";git push origin master
+cd ~/test_project/;
+git pull gitserver master;
+git add .;git commit -am "crontab commit";git push gitserver master

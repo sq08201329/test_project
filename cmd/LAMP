@@ -1,0 +1,84 @@
+httpd -l
+chcon -R --reference /var/www/html/ /home/eric
+
+RewriteEngine on
+RewriteRule /([a-z].*) /~$1 [R]
+
+htppasswd -cm aa.pwd tom
+grep sunqi /etc/shadow | cut -d: -f1-2 >> aa.pwd
+
+<Directory "/var/www/html/caiwu">
+        #Order allow,deny
+        #Allow from 192.168.1.107
+#       Deny from 192.168.1.107
+        AuthType Basic
+        AuthName "please enter your name and password:"
+        AuthUserFile "/etc/httpd/conf/aa.pwd"
+        Require valid-user
+</Directory>
+
+# source
+./configure --enable-so --enable-vhost-alias --prefix=/usr/local/apache
+make;make install
+
+ bin/apachectl restart
+
+# mysql
+yum -y install mysql-server
+mysqladmin -u root password The_sunqi
+mysql -u -p -h
+
+show databases
+show tables
+
+yum -y install php-mysql
+# mysql source 
+bin/mysqld_safe --user=mysql &
+# php source
+./configure --with-apxs2=/usr/local/apache/bin/apxs  --with-mysql=/usr/local/mysql
+#apache conf
+1. LoadModule php5_module        modules/libphp5.so
+2. DirectoryIndex index.php index.html
+3. AddType application/x-httpd-php .php
+
+#rpm php-gd
+#gd-devel source
+/etc/php.ini
+/root/php-5.2.17/ext/gd
+/usr/local/bin/phpize 
+yum -y install autoconf
+yum -y install libpng-devel
+./congure;make;make install
+#/usr/local/lib/php.ini
+extension_dir = "/usr/local/lib/php/extensions/no-debug-non-zts-20060613/"
+extension=gd.so
+
+# apache rewrite
+/root/httpd-2.2.15/modules/mappers
+/usr/local/apache/bin/apxs -a -i -c mod_rewrite.c
+
+# mysql  binfa
+/usr/local/apache/bin/ab  -n 2000 -c 1000 http://192.168.1.129/discuz/forumdisplay.php?fid=2
+kill mysql
+/usr/local/mysql/bin/mysqld_safe --user=mysql &
+
+#lightd
+
+#php  fastcgi ngix
+./configure --prefix=/usr/local/php5 --enable-fastcgi  --with-mysql=/usr/local/mysql
+./php-cgi -b 192.168.1.127:9000 &
+#ngix
+./configure --prefix=/usr/local/ngix
+
+#conf
+upstream fzph {
+	server 192.168.1.127:9000
+	server 192.168.1.129:9000
+}
+location ~ \.php$ {
+    proxy_pass   http://fzph;
+}
+
+ulimit -a
+
+curl http://192.168.1.129/index.php

@@ -1,0 +1,9 @@
+#!/bin/ksh
+typeset -Z25 var
+var=1
+echo "var=$var"
+trap 'echo "before execute line:$LINENO, a=$a,b=$b"' DEBUG
+declare -a array=
+. functions
+array_cmd date
+echo $array

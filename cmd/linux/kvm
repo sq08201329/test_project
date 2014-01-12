@@ -1,0 +1,9 @@
+ls mod | grep kvm
+modprobe kvm
+
+yum
+kvm
+virt-manager
+libvirt
+
+/etc/init.d/libvirtd start

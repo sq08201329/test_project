@@ -1,0 +1,122 @@
+#for tuxedo
+export APPDIR="/home/tuxedo/simpdir"
+export TUXCONFIG="/home/tuxedo/simpdir/simpletux"
+export TUXDIR="/home/tuxedo/tuxedo10gR3"
+export LIBPATH=$TUXDIR/lib
+export LD_LIBRARY_PATH=$TUXDIR/lib
+# User specific environment and startup programs
+PATH=$PATH:$HOME/bin:~:$TUXDIR/bin
+export LANG=C
+
+#simp
+cp $TUXDIR/samples/atmi/simpapp/ ~/$APPDIR
+uname -n; hostname
+tmloadcf -y ~/simpdir/ubbsimple
+
+tmboot -y
+tmshtdown -y
+tmadmin
+	help
+	psr
+	psc
+
+# distribute transaction process
+# 开启全局事物处理
+1. tpopen()
+2. service ->AUTOTRAN=Y
+
+#non XA
+# client
+main() {
+	tpinit()
+	tpcall("X",...);
+	tpterm(); }
+#server
+X() {
+	do work;
+	tpreturn();
+}
+
+# XA
+# client
+main() {
+	tpinit()
+
+	tpbegin();
+	tpcall("X",...);
+	tpcall("Y",...);
+	tpcommit(); # tpabort()
+
+	tpterm();
+}
+#server conn oracle
+X() {
+	do work;
+	tpreturn();
+}
+
+#server conn mysql
+Y() {
+	do work;
+	tpreturn();
+}
+> tpopen() >tpsvrinit() -
+	   >tpboot()	
+> tpclose()>tpsrcdone() -
+	   >tpshutdown()
+#conf
+sqlplus /nolog
+conn sys as sysdba
+
+@$ORACLE_HOME/rdbms/admin/xaview.sql
+
+grant select on v$xatrans$ to scott with grant option;
+grant select on v$pending_xatrans$ to scott with grant option;
+#grant select on pending_trans$ to public;
+grant select on dba_2pc_pending to public;
+grant select on dba_pending_transactions to public;
+
+conn system/manager
+grant select any table to public;
+
+#/home/tuxedo/tuxedo10gR3/udataobj/RM
+Oracle_XA:xaosw:-L${ORACLE_HOME}/lib -lclntsh
+#/home/tuxedo/tuxedo10gR3/bin
+buildtms -o TMS_ORA -r Oracle_XA
+
+#Tlog
+# ubb MACHINE
+                TLOGDEVICE="/home/oracle/proc/tuxedo/bankit/TLOG"
+                TLOGNAME=TLOG
+                TLOGSIZE=200
+#tmadmin
+crdl -b 500 -z /home/oracle/proc/tuxedo/bankit/TLOG
+crlog -m simple
+
+# GROUP
+        #OPENINFO="Oracle_XA:Oracle_XA+Acc=P/scott/The_sunqi+SqlNet=remote_server+SesTm=600+MaxCur=600+MaxCur=5+LogDir=."
+        OPENINFO="Oracle_XA:Oracle_XA+Acc=P/scott/The_sunqi+SesTm=600+MaxCur=600+MaxCur=5+LogDir=."
+        TMSNAME="TMS_ORA" TMSCOUNT=2
+
+mv sqlca.h sqlca.rename.h
+mv sqlcode.h sqlcode.rename.h 
+mv sqlda.h sqlda.rename.h 
+mv libsql.a libsql.rename.a
+mv libsql.so libsql.rename.so
+
+#compiler serv
+proc pc include=$TUXDIR/
+buildserver -o  $ -f $.c -r Oracle_XA -s
+
+
+----------------------------------------------------------
+tuxedo systme -->  mechine --> group --> server --> service
+
+#remote conn
+#serv add
+*MACHINE
+	MAXWSCLIENTS=5
+*SERVERS
+	"WSL"   SRVGRP=GROUP1 SRVID=1116 clopt="-A -- -n //172.29.22.50:8888 -m 2 -M 5 		-x 6"
+						      #client serv ip       #5>clients>2     #6clients/WSH
+

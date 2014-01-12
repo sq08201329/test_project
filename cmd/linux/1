@@ -1,0 +1,25 @@
+disk partition	|
+		|-primary	          ==>information -disk partition table
+		|-extended-logical	
+
+first sector(512 bytes) NTLDR or boot manager or 
+boot manager 	       dpt    flag	
+	446		64	2
+	grub
+	lilo
+	
+everything is file
+hard disk 	IDE  --> /dev/hda,b,c --> scsi/stat/sas --> /dev/sda,b,c
+
+partition
+fdisk /dev/sda (hard disk) 	(1-4)->partition
+				 5   ->logical driver
+
+format
+mkfs.ext3 /dev/sda5 (partition)
+
+mount
+mount /dev/sda5 /dir
+
+		
+

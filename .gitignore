@@ -1,0 +1,9 @@
+# * ? ! [aeiou] [0-9]
+*.[oa]
+*.java
+apue1/*
+!*.c
+!Makefile
+*.swp
+python/django_pro/blog/bigdata/xmldata/*
+python/django_pro/blog/bigdata/wget-log*

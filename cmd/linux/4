@@ -1,0 +1,200 @@
+#standalone server and Transient server
+chkconfig --list 
+#standalone 
+portmap        	0:关闭	1:关闭	2:启用	3:启用	4:启用	5:启用	6:关闭
+postfix        	0:关闭	1:关闭	2:启用	3:启用	4:启用	5:启用	6:关闭
+postgresql     	0:关闭	1:关闭	2:关闭	3:关闭	4:关闭	5:关闭	6:关闭
+xinetd         	0:关闭	1:关闭	2:关闭	3:启用	4:启用	5:启用	6:关闭
+yum-updatesd   	0:关闭	1:关闭	2:启用	3:启用	4:启用	5:启用	6:关闭
+#Transient 
+基于 xinetd 的服务：
+	telnet:        	启用
+	tftp:          	启用
+
+chkconfig sshd --level 235 off|on...
+#show all service chkconfig 
+chkconfig --list 
+ 	  --del
+	  --add
+
+lsof -i:23
+COMMAND  PID USER   FD   TYPE DEVICE SIZE NODE NAME
+xinetd  3918 root    5u  IPv4  12887       TCP *:telnet (LISTEN)
+
+cat /etc/xinetd.d/telnet
+service telnet
+{
+	flags		= REUSE
+	socket_type	= stream        # udp:dgram
+	wait		= yes		# just one user connex
+	user		= root		# process owner
+	server		= /usr/sbin/in.telnetd	#calling major script file
+	log_on_failure	+= USERID
+	disable		= no
+	access_times	= 9:00 - 18:00
+	instances	= 2		# most 2 ip could access
+	per_source	= 3		# ip/5 telnet process
+}
+
+service xinetd restart
+man 5 xinetd.conf
+
+ntsysv
+system-config-services
+
+vi /etc/init.d/network
+
+
+# show all signal
+kill -l
+ 1) SIGHUP	 2) SIGINT	 3) SIGQUIT	 4) SIGILL
+ 5) SIGTRAP	 6) SIGABRT	 7) SIGBUS	 8) SIGFPE
+ 9) SIGKILL	10) SIGUSR1	11) SIGSEGV	12) SIGUSR2
+13) SIGPIPE	14) SIGALRM	15) SIGTERM	16) SIGSTKFLT
+17) SIGCHLD	18) SIGCONT	19) SIGSTOP	20) SIGTSTP
+21) SIGTTIN	22) SIGTTOU	23) SIGURG	24) SIGXCPU
+25) SIGXFSZ	26) SIGVTALRM	27) SIGPROF	28) SIGWINCH
+29) SIGIO	30) SIGPWR	31) SIGSYS	34) SIGRTMIN
+35) SIGRTMIN+1	36) SIGRTMIN+2	37) SIGRTMIN+3	38) SIGRTMIN+4
+39) SIGRTMIN+5	40) SIGRTMIN+6	41) SIGRTMIN+7	42) SIGRTMIN+8
+43) SIGRTMIN+9	44) SIGRTMIN+10	45) SIGRTMIN+11	46) SIGRTMIN+12
+47) SIGRTMIN+13	48) SIGRTMIN+14	49) SIGRTMIN+15	50) SIGRTMAX-14
+51) SIGRTMAX-13	52) SIGRTMAX-12	53) SIGRTMAX-11	54) SIGRTMAX-10
+55) SIGRTMAX-9	56) SIGRTMAX-8	57) SIGRTMAX-7	58) SIGRTMAX-6
+59) SIGRTMAX-5	60) SIGRTMAX-4	61) SIGRTMAX-3	62) SIGRTMAX-2
+63) SIGRTMAX-1	64) SIGRTMAX	
+
+#job no
+kill -9 $$
+kill -9 pid
+#process name
+pkill xeyes
+killall xeyes
+# app
+xkill
+
+
+jobs
+bg jobno
+fg jobno
+
+#memory mapping
+/porc
+
+pstree
+ps -ef  | grep gnome
+ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0   2160   648 ?        Ss   11:47   0:00 init [5]   
+
+ps a
+ PID TTY      STAT   TIME COMMAND
+
+#define format
+ps -eo pid,tid,class,rtprio,ni,pri,psr,pcpu,stat,wchan:14,comm
+
+process stat
+R(running) S(sleep) D(io) Z(zombin) T(stop ctrl+z) W(no enough memory)
+N(pri low)<(pri high) s(sub precess) l(mul thread) +(process group)
+
+
+nice -20<->19
+sleep 400 &
+ps -eo pid,pri,ni,comm | grep sleep | grep -v 'grep' | grep -v 'ps'
+renice -10 $(ps -eo pid,pri,ni,comm | grep sleep | grep -v 'grep' | grep -v 'ps'|awk '{print $1}')
+renice +10 $(ps -eo pid,pri,ni,comm | grep sleep | grep -v 'grep' | grep -v 'ps'|awk '{print $1}')
+
+top
+r renice
+k kill
+M mem
+P cpu
+uptime
+free
+
+
+nice
+renice
+
+#atd
+at 22:33 <<! ;touch ~/at1;!
+at -l
+atq
+atrm
+atq
+
+cat /etc/crontab
+00 22 * * * root find / > allfile
+cat /etc/anacrontab
+1(every 1day)	65(online 65min)	cron.daily		run-parts /etc/cron.daily
+7	70	cron.weekly		run-parts /etc/cron.weekly
+30	75	cron.monthly		run-parts /etc/cron.monthly
+crontab -l
+crontab -e|-r|-l
+crontab -u user -e	#diff from su - user,crontab -e , owner is different
+
+* * * * * user cmd
+*/5           		# per 5 mins exec
+1,2,3			# 1 2 3min per hour
+
+ls /etc/cron*
+# sunqi mustn't exec cron
+echo sunqi >>  /etc/cron.deny 
+
+mount
+
+rpm -qa | grep at
+rpm -qa | wc -l
+rpm -ql crontabs
+rpm -qc crontabs
+rpm -qf /etc/crontab
+rpm -qi crontabs
+rpm -qp *.rpm
+
+libpq.so.4 is need by ...  #no prefix , - 
+rpm -ivh http	postgresql-libs # libpq
+		gd
+# uninstall and do not consider dependance
+rpm -e postgresql --nodeps
+
+#dependence lib
+.../Server/repodata/
+#yum dependences 
+cat /etc/yum.repos.d/myrpm.repo
+[myrepo]
+name=redhatrpm
+baseurl=file:///install/Server
+enable=1
+gpgcheck=0
+
+#format
+yum -y install php
+if can't install
+#wget http://docs.linuxtone.org/soft/lemp/CentOS-Base.repo
+#mv /etc/yum.repos.d/rhel-debuginfo.repo *.bak
+#mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/rhel-debuginfo.repo 
+yum list
+yum search httpd
+
+#put 3rd soft in to yun source
+http://fedoraproject.org/wiki/EPEL
+
+#make repo
+createrepo
+
+
+createrepo .
+# local source
+write /etc/yum.repos.d/my.repo
+[a name]
+name=xyz
+baseurl=file:///cdrom   # or http://www....
+enable=1
+gpgcheck=0
+
+yum update
+yum list
+
+./configure options
+make
+make install

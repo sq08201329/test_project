@@ -1,0 +1,4 @@
+ls
+ls -ltr
+system-config-user
+vim /etc/login.defs

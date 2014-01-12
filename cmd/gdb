@@ -1,0 +1,34 @@
+ctrl + x + a
+1.list
+2.set args -b -x
+  show args
+3.print var
+  whatis var
+4.info break
+  break func if i=2
+  break +offsize
+  break -offsize
+  break lineno
+  break lineno thread 1
+  delete breakpoint
+  delete breakpoint 1
+  disable breakpoint 1
+  enable breakpoint 1
+  clean lineno
+5.whatis
+  ptype
+  set var=
+  print
+6.next
+  setp --exit func
+7.call func(,,)
+8.$pc
+  $fp
+  $sp
+  $ps
+9.display
+  undisplay
+  enable display
+  disable display
+  info display
+

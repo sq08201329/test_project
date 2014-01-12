@@ -1,0 +1,2 @@
+proc test.pc include=/home/tuxedo/tuxedo10gR3/include
+buildserver -o test -f test.c -r Oracle_XA -s TEST -f$ORACLE_HOME/lib/libclntsh.so

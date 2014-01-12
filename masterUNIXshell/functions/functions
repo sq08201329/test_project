@@ -1,0 +1,316 @@
+######################################### ##########################################
+#########	use for special fucntion and diff linux class OS	#############
+########################################## ##########################################
+function debug_true() {
+	export DEBUG=true
+}
+
+function debug_false() {
+	export DEBUG=false
+}
+
+function start() {
+	func_name=$1
+	echo -e "\n[`date +%Y-%m-%d" "%T`][`basename $0`][$func_name] DEBUGING SATRTING ......\n" 
+}
+function end() {
+	func_name=$1
+	echo -e "\n[`date +%Y-%m-%d" "%T`][`basename $0`][$func_name] DEBUGING ENDING......\n" 
+}
+
+
+
+function put_sshkey_rsa_remhost() {
+	start $FUNCNAME
+	ssh-keygen -t rsa
+	REM_HOST=$1
+	cat $HOME/.ssh/id_rsa.pub | ssh $REM_HOST "cat >> ~/.ssh/authorized_keys"
+	end $FUNCNAME
+}
+
+function put_sshkey_dsa_remhost() {
+	start $FUNCNAME
+	ssh-keygen -t dsa
+	REM_HOST=$1
+	cat $HOME/.ssh/id_dsa.pub | ssh $REM_HOST "cat >> ~/.ssh/authorized_keys"
+	end $FUNCNAME
+}
+
+function get_sub_file() {
+	if [ $# -ne 3 ]
+	then
+		echo "USAGE:`basename $0` logfile newlogfile seqno"
+		exit 1
+	fi
+
+	key=`grep -n $3 $1 | awk -F":" '{print $1}'   | awk 'BEGIN{RS="" ;FS="\n"} { print $1","$NF}' `
+	begin=`echo $key | awk -F"," '{print $1}'`
+	end=`echo $key | awk -F"," '{print $2}'`
+	filename=`basename $1`
+	pre=`echo $filename | awk -F"." '{ print $1}'`
+
+	if [ "$pre" != "pkg" ]
+	then
+		sed -ne "$key p" $1 > $2
+	else
+		begin=`echo "$begin - 100" | bc`
+		end=`echo "$end + 100" | bc`
+		echo $begin
+		echo $end
+		sed -ne "$begin,$end p" $1 > $2
+	fi
+}
+
+function get_opts_examp() {
+echo "OPTIND starts at $OPTIND"
+while getopts ":pq:" optname                          #first : means silent process error;(1)?no such opt(2):not send arg(3)* other cases
+  do
+    case "$optname" in
+      "p")
+        echo "Option $optname is specified"
+        ;;
+      "q")
+        echo "Option $optname has value $OPTARG"
+        ;;
+      "?")
+        echo "Unknown option $OPTARG"
+        ;;
+      ":")
+        echo "No argument value for option $OPTARG"
+        ;;
+      *)
+      # Should not occur
+        echo "Unknown error while processing options"
+        ;;
+    esac
+    echo "OPTIND is now $OPTIND"
+  done
+}
+
+function while_read_line_bottom_FD_OUT() {
+	>$OUTFILE
+	exec 4<&1
+	exec 1>$OUTFILE
+
+	while read line
+	do	echo "$line"
+		:
+	done < $INFILE
+
+	exec 1<&4
+	exec 4>&-
+}
+
+function while_read_line_bottom() {
+	>$OUTFILE
+	while read line
+	do	echo "$LINE" >> $OUTFILE
+		:  				# is  0;
+	done < $INFILE    # or   --done < <(cmd)
+}
+
+function send_mail_to_root() {
+	mail_file=$1
+	mail -s "subject" /var/mail/root < $mail_file
+	#cat $mail_file | mail -s "subject" /var/mail/root
+}
+
+function send_mail_from_to_root() {
+	mail_file=$1
+	
+	sendmail -f root@172.29.69.134 -s "subject" /var/mail/root < $mail_file #mail -r
+	#cat $mail_file | mail -s "subject" /var/mail/root
+}
+
+function rotate_line() {                           #kill last background process $!
+	interval=1
+	tcount="0"
+	
+	while :
+	do
+		tcount=`expr $tcount + 1`
+		case $tcount in
+		"1") echo -e '-'"\b\c"
+			sleep $interval
+			;;
+		"2") echo -e '\\'"\b\c"
+			sleep $interval
+			;;
+		"3") echo -e "|\b\c"
+			sleep $interval
+			;;
+		"4") echo -e "/\b\c"
+			sleep $interval
+			;;
+		*) tcount="0"
+		;;
+		esac
+	done
+}
+
+function elapsed_time() {
+	SEC=$1
+	(( SEC < 60 )) && echo -e "[Elaspsed time: $SEC seconds]\c"
+	(( SEC >= 60 && SEC < 3600 )) && echo -e "[Elaspsed time: $(( SEC / 60 )) min $SEC seconds]\c"
+	(( SEC > 3600 )) && echo -e "[Elaspsed time: $(( SEC / 3600 )) hr $(( (SEC % 3600) / 60 ))min $(( (SEC % 3600) % 60 )) seconds]\c"
+}
+
+function get_random_num_u4() {
+	RN=$(dd if=/dev/random count=1 2>/dev/null | od -t u4 | awk '{print $2}' | head -n 1) 
+	echo $RN
+}
+
+function ping_host() {
+	HOST=$1
+	PING_COUNT=3
+	PACKET_SIZE=54
+
+	case $(uname) in
+	AIX|OpenBSD|Linux)
+		ping -c${PING_COUNT} $HOST 2>/dev/null
+		;;
+	HP-UX)
+		ping $HOST $PACKET_SIZE $PING_COUNT 2>/dev/null
+		;;
+	SunOS)
+		ping -S $HOST $PACKET_SIZE $PING_COUNT 2>/dev/null
+		;;
+	*)
+		echo "\nERROR:Unsupporyed Operatingf System - $(uname)"
+		echo "\n\t...EXITING...\n"
+		exit 1
+		;;
+	esac
+}
+
+function ftpconf() {
+	 :
+	#/etc/pam.d/login 
+	#mv /etc/securetty.bak /etc/securetty.bak
+	#ed.script modify /etc/vsftpd.conf
+	#/etc/passwd sh->/bin/bash
+}
+
+function rsync134() {
+	src= #/
+	dest= #root@172.19.69.134:/
+	rsync -avz $src $dest
+}
+
+function find_all_big_than_M_file() {
+	M_BYTE = $1
+	find / -type f -size +${M_BYTE}000000c -print
+}
+		
+function bc_string() {
+	ADD=
+	PLUS=
+	string="1 2 3 4"
+	SCALE=1
+	for x in $string
+	do
+		ADD="$ADD $PLUS $x"
+		PLUS="+"
+	done
+	echo $ADD
+	#result=$(bc<<!;  scale=5; ${ADD}; !)
+	echo "scale=$SCALE; $ADD" | bc
+}
+
+function select_menu() {
+	clear
+	echo -e "\n\tSYSTEM INFORMATION MENU\n"
+	PS3="Select an option and press Enter:"
+
+	select i in OS Host Filesystems Date Users Quit
+	do 
+		case $i in
+		OS)
+			echo `uname`
+			;;
+		Host)
+			echo `hostname`
+			;;
+		Filesystems)
+			echo `df -k`
+			;;
+		Date)
+			echo `date`
+			;;
+		Users)
+			echo `who`
+			;;
+		Quit)
+			break
+			;;
+		esac
+
+
+		echo -e "please enter to continue\n"
+		read 
+		clear
+
+		echo -e "\n\tSYSTEM INFORMATION MENU\n"
+	done
+	clear
+}
+
+function array_cmd() { #${array[*]} ${array[@]} $array ${#array[*]} ${#array[@]}
+	cmd=$1
+	sh_kind=`ps -p $$ | tail -n 1 | awk '{print $4}'` #get shell
+	case  $sh_kind in
+	bash)
+		declare -a array=(`$cmd`) #Array="declare -a"
+		;;
+	ksh)
+		set -A array=`$cmd` #Array="set -A"
+		;;
+	esac
+}
+function ftp124() {
+	:
+	#ftp -i -v -n 192.168.43.124<<@; user sunqi The_sunqi; binary; lcd ./; cd ./l put functions; bye; @ 
+	#nlist remoteDirectory localfile
+}
+
+function process_pids() {
+	PROCESS=$1
+	alias grep="grep"
+	ps aux | grep $PROCESS | grep -v "grep $PROCESS" | awk '{print $2}' #| grep -v "`basename $0`"  | awk '{print $2}'
+}
+
+function batch_built_users() {
+	username=$1
+	groupname=$2
+	password=$3
+	for u in $user
+	do
+		useradd -G $groupname $u
+		echo "$password" | passwd --stdin $u
+	done
+}
+		
+
+##############################DEBUG######################################
+#trap 'echo "before execute line:$LINENO, a=$a,b=$b,c=$c"' DEBUG
+#trap 'echo "[line:$LINENO ERROR:command or function exited with status $?"' ERR
+#trap 'echo "[line:$LINENO] EXIT with status $?"' EXIT
+
+#kill -l
+
+#who w last
+#ps -A(all) -f(running all) -e(except kernel process) auxw
+
+#wall rwall write talk
+
+#print -p $var  --talk to the co-process  --usage: co-process |&
+
+#length of var   --echo ${#var}  --expr length $var  --awk '{print length(var)}'
+
+#$RANDOM 
+
+#printf "%o\n%02d\n%x\n%e\n%.2f\n" 10 10 10 10 10
+
+#ls | cat file1 - file3   #show file1 stdin file2
+#ls | cat /dev/fd/0 file3
+#ls | cat /dev/stdin file3

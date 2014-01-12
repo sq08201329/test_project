@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <string.h>
+#include "/home/tuxedo/tuxedo10gR3/include/atmi.h"
+#include "userlog.h"
+
+EXEC SQL INCLUDE sqlca;
+
+EXEC SQL BEGIN DECLARE SECTION;
+	char *ac_empno;
+	int al_empno = 0;
+	char ac_ename[11] = "";
+	char *uid = "scott/The_sunqi";
+EXEC SQL END DECLARE SECTION;
+
+//atmi.h
+TEST(TPSVCINFO *rqst) {
+	ac_empno = rqst->data;
+	al_empno = 7369;
+userlog("text..................\n");
+
+	EXEC SQL CONNECT :uid;
+	if(sqlca.sqlcode !=0) {
+		userlog("connect failure, sqlcode=%ld, sqlerr=%s\n", sqlca.sqlcode, (char *)sqlca.sqlerrm.sqlerrmc);
+		strcpy(rqst->data, sqlca.sqlerrm.sqlerrmc);
+		tpreturn(TPFAIL, 0, rqst->data, 0, 0);
+	}
+
+	EXEC SQL SELECT ENAME into :ac_ename from emp where empno=:al_empno;
+	if(sqlca.sqlcode != 0) {
+		userlog("select from emp failure,sqlcode=%ld, sqlerr=%s\n", sqlca.sqlcode, (char *)sqlca.sqlerrm.sqlerrmc);
+		strcpy(rqst->data, sqlca.sqlerrm.sqlerrmc);
+		tpreturn(TPFAIL, 0, rqst->data, 0, 0);
+	}
+
+	strcpy(rqst->data, ac_ename);
+	tpreturn(TPSUCCESS, 0, rqst->data, 0, 0);
+}

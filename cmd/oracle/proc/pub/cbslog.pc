@@ -1,0 +1,182 @@
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  ProgramName            : cbslog.pc                                %%
+%%                                                                    %%
+%%  SystemName             : 全国邮政储蓄统一版本应用系统             %%
+%%                                                                    %%
+%%  SubSystem              : pub库                                    %%
+%%                                                                    %%
+%%  OS & Environment       : AIX 4.3, ANSI C compiler                 %%
+%%                                                                    %%
+%%  Version                : 2.0                                      %%
+%%                                                                    %%
+%%  Description            :                                          %%
+%%                                                                    %%
+%%  InterFace              :                                          %%
+%%         long   CBSLog()      --    日志函数(写入log目录)           %%
+%%         long   CBSPrint()    --    日志函数(写入打印目录)          %%
+%%                                                                    %%
+%%  Date        postion   author     description                      %%
+%%  ----------------------------------------------------------------- %%
+%%  2000/12/06  GuangDong HouYanMin  modify  for 自动创建目录         %%
+%%  2003/07/25  BeiJing   hjh        adapt                            %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdarg.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+
+/******************************************************************************
+ * Function : CBSLog()
+ * Action   : 按格式登记日志信息到指定文件
+ * Input    : 文件名，格式，...
+ * Output   : 
+ * Return   : 0 -- 成功；-1 -- 文件打开错；-2 -- 写文件错
+ ******************************************************************************/
+long
+CBSLog(char * filename, char * fmt, ...)
+{
+    va_list	ap;
+    char 	fullname[80];
+	char	timestr[18];	/* 当前系统时间戳 */
+    FILE * fp;           	/* 文件指针 */
+    int    fd;           	/* */
+
+	/* 打开文件 */
+    memset(fullname, 0, sizeof(fullname));
+    memset(timestr, 0, sizeof(timestr));
+    strcpy(fullname, getenv("LOGDIR"));
+    strcat(fullname, "/");
+    strcat(fullname, filename);
+    if((fp = fopen(fullname, "a+")) == NULL)
+    {
+		/*
+       SysErr(strerror(errno), errno);
+		*/
+       return ( -1 );
+    }
+
+	/* 取系统当前时间 */
+	GetSysTime( timestr );
+
+    /* 为避免写入混乱将文件加锁 */
+    fd = fileno(fp);
+    lockf(fd, F_LOCK, 0l);
+
+    /* 写入文件 */
+	/* -- Rem ---
+	fprintf( fp, "[%s]", timestr );
+	 * -- Rem --- */
+    va_start( ap, fmt );
+    if( vfprintf(fp, fmt, ap) < 0)
+    {
+		/*
+	    SysErr(strerror(errno), errno);
+		*/
+	    return ( -2 );
+    }	
+    va_end( ap );
+
+    /* 解锁 */
+    lockf(fd, F_ULOCK, 0l);
+
+	/* 关闭文件 */
+    fclose(fp); 
+
+    return ( 0 );
+}
+
+#if 0
+long
+CBSPrint(char * filename, char * fmt, ...)
+{
+    va_list ap;
+    char fullname[80];
+	char	timestr[18];	/* 当前系统时间戳 */
+    FILE * fp;           	/* 文件指针 */
+    int    fd;           	/* */
+
+    char  auto_comm[200];
+    struct stat chk_buf;
+	int	  ret=0;
+
+    memset(fullname, 0, sizeof(fullname));
+    memset(timestr, 0, sizeof(timestr));
+    strcpy(fullname, getenv("PRINTERDIR"));
+
+	rtrim (_InstNo);
+	if ( strlen(_InstNo) >= 1 )
+	{
+		strcat(fullname, "/");
+		strcat(fullname, _InstNo);
+	}
+	else
+	{
+		strcat(fullname, "/");
+		strcat(fullname, "mail" );
+	}
+    strcat(fullname, "/");
+
+    memset (auto_comm,0,sizeof auto_comm);
+    memset (&chk_buf,0,sizeof (struct stat));
+    ret=stat (fullname,&chk_buf);
+    if (ret<0)  /* 目录不存在 */
+    {
+        SysErr ("文件所在目录不存在，新建目录!!!\n",0);
+        sprintf (auto_comm,"mkdir -p %s >/dev/null 2>&1",fullname);
+        system (auto_comm);
+        strcat (auto_comm,"\n");
+        SysErr (auto_comm,1);
+    }
+
+    strcat(fullname, filename);
+	if( !strcmp(fmt, "") )
+	{
+		/* 清除文件内容 */
+		if((fp = fopen(fullname, "w")) == NULL)
+		{
+		   SysErr(strerror(errno), errno);
+		   return ( -1 );
+		}
+		return ( 0 );
+	}
+
+    if((fp = fopen(fullname, "a+")) == NULL)
+    {
+       SysErr(strerror(errno), errno);
+       return ( -1 );
+    }
+
+	/* 取系统当前时间 */
+	GetSysTime( timestr );
+
+    /* 为避免写入混乱将文件加锁 */
+    fd = fileno(fp);
+    lockf(fd, F_LOCK, 0l);
+
+    /* 写入文件 */
+	fprintf( fp, "[%s]", timestr );
+    va_start( ap, fmt );
+    if( vfprintf(fp, fmt, ap) < 0)
+    {
+	    SysErr(strerror(errno), errno);
+	    return ( -2 );
+    }	
+    va_end( ap );
+
+    /* 解锁 */
+    lockf(fd, F_ULOCK, 0l);
+
+	/* 关闭文件 */
+    fclose(fp); 
+    
+    return ( 0 );
+}
+#endif

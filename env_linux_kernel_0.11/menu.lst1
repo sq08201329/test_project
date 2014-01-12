@@ -1,0 +1,28 @@
+default		0
+#splashimage /boot/grub/splashimages/biosplash.xpm.gz
+
+title		Linux 0.11 with fd1 root disk
+root		(fd0)
+kernel      /boot/bootimage-0.11-fd
+boot
+
+title		Linux 0.11 with hd0 root disk (with development tools)
+root		(fd0)
+kernel      /boot/bootimage-0.11-hd
+boot
+
+title		Linux 0.12 with fd1 root disk
+root		(fd0)
+kernel      /boot/bootimage-0.12-fd
+boot
+
+title		Linux 0.12 with hd0 root disk (with development tools)
+root		(fd0)
+kernel      /boot/bootimage-0.12-hd
+boot
+
+title		Boot from hd0 (with development tools)
+root		(hd0)
+chainloader	+1
+boot
+
