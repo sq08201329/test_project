@@ -50,6 +50,13 @@ easy_install-2.7 rediscluster
 redis-cli INFO
 redis-cli shutdown
 
+#centinel
+SENTINEL master
+SENTINEL slaves mymaster
+SENTINEL get-master-addr-by-name mymaster
+SENTINEL reset <pattern>
+SENTINEL failover <master name>
+
 #mongodb
 apt-get install mongodb
 export LC_ALL="en_US.utf8"

@@ -20,6 +20,7 @@ urlpatterns = patterns(
     url(r'^blog/index$', 'blogapp.views.index'),
     url(r'^blog/$', 'blogapp.views.indexall'),
     url(r'^blog/timeline$', 'blogapp.views.timeline'),
+    url(r'^blog/sample$', 'blogapp.views.sample'),
     url(r'^blog/update/', 'blogapp.views.update'),
     url(r'^blog/delete/', 'blogapp.views.delete'),
 )

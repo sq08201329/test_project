@@ -1,10 +1,10 @@
-import redis 
+import redis
 import rediscluster
 cluster = {
          # node names
          'nodes' : { # masters
-                     'node_1' : {'host' : '127.0.0.1', 'port' : 63791},
-                     'node_2' : {'host' : '127.0.0.1', 'port' : 63792},
+                     'node_1' : {'host' : '192.168.1.109', 'port' : 6379},
+                     'node_2' : {'host' : '192.168.1.109', 'port' : 6380},
                    }
     }
 

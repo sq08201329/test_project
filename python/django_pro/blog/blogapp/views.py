@@ -62,3 +62,5 @@ def indexall(request):
 
 def timeline(request):
     return render_to_response('timeline.html')
+def sample(request):
+    return render_to_response('sample.html')
