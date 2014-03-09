@@ -1,11 +1,18 @@
 <html>
+    <head>
+	<link rel="stylesheet" type="text/css" href="mystyle.css">
+    </head>
     <!--<head>test</head>-->
-    <body >
+<!--<body background="http://pic.58pic.com/58pic/12/03/38/59g58PICMXd.JPG">-->
+    <body>
+	<a name="label" href="#end">mao</a>
 	<!--bgcolor="write"> -->
 	<h1 align="center">My First Heading</h1> 
 	<a href="http://www.baidu.com"> baidu</a>
 	<hr/>
-	<img src="http://m.baidu.com/static/index/u.png"></img>
+	<a href="http://www.baidu.com/" target="_blank">
+	    <img src="http://m.baidu.com/static/index/u.png"></img>
+	</a>
 	<p>My first paragraph.</p> 
 	<pre><b>
     for i in x:
@@ -29,5 +36,53 @@
 	<kbd>normal</kbd>
 	<br>
 	<var>int a=2;</var>
+	<div style="background:black;height:1000px;width:max;color:white">div</div>
+	<span style="background:black;height:10px;width:max;color:white">span</span>
+	<br>
+	<a href="http://192.168.1.109/prohtml5/html4/mao.html#tip" name="end">to another page'mao</a>
+	<br>
+	<img src="http://www.w3school.com.cn/i/eg_planets.jpg" border="0" usemap="#planetmap" alt="Planets"/>
+	<map name="planetmap" id="planetmap">
+	    <area shape="circle" coords="180,139,14" href="http://www.w3school.com.cn/example/html/venus.html" target="_blank" alt="venus" />
+	    <area shape="circle" coords="129,161,10" href="http://www.w3school.com.cn/example/html/mercur.html" target="_blank" alt="mercur" />
+	    <area shape="rect" coords="0,0,110,260" href="http://www.w3school.com.cn/example/html/sun.html" target="_blank" alt="sun" />
+	</map>
+	<br>
+	<table border="1" cellpadding="10" cellspacing="10" >
+	    <caption>mytitle</caption>
+	    <col align="left"/>
+
+	    <tfoot>
+	    <tr align="left"><th>head1</th><th colspan="2">colspan</th></tr>
+	    </tfoot>
+
+	    <thead>
+	    <tr><td align="right">1</td><td width="50">2</td><td width="50">7</td></tr>
+	    </thead>
+
+	    <tr><th rowspan="2">rowspan</th><td>3</td><td>4</td></tr>
+	    <tr><td>5</td><td>&nbsp;</td></tr>
+	    <tr><td>6</td><td>
+		    <table bgcolor="white" border="2" cellpadding="10" cellspacing="10">
+		    <tr><td bgcolor="black">a</td><td>b</td></tr>
+		    <tr><td>d</td><td>c</td></tr></table> <td>7</td> </td></tr>
+
+	</table>
+	<ul><li>coffee</li><li>milk</li></ul>
+	<!--type i I a A 1-->
+	<ol type="I"><li>coffee</li><li>milk</li><li>coffee</li><li>milk</li></ol>
+	<br>
+	<div > 
+	    <div style="background-color:#000000" id="header"> header</div>
+	    <div style="background-color:#333333;float:left;height:1000px;" id="menu">menu<ul>
+		    <li style="list-style:none">aaaaaaaaaaaaaaaaaaaaa</li>
+		    <li style="list-style:none">bbbbbbbbbbbbbbb</li>
+		    <li style="list-style:none">ccccccccccccccc</li>
+	    </ul></div>
+	    <div style="background-color:#666666;float:left" id="content">content </div>
+	    <div style="background-color:#999999;clear:both" id="footer"> footer</div>
+	<a href="#label" name="end">to mao</a>
+
+	</div>
     </body> 
 </html>
