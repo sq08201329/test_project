@@ -1,0 +1,123 @@
+# help
+$ pydoc -p 5000
+$ pydoc chr
+>>> help('chr')
+# in file 
+"""
+
+# insall python
+yum install openssl-devel
+./configure && make && make install
+#setuptools django numpy
+python setup.py build
+python setup.py install
+easy_install django
+/usr/local/python2.7.5/bin/easy_install numpy
+
+#
+python -c "..."
+
+#django
+ /usr/local/python2.7.5/bin/python2.7 django-admin.py help
+
+#pysqlite
+wget https://pypi.python.org/packages/source/p/pysqlite/pysqlite-2.6.3.tar.gz
+tar -xzf pysqlite-2.6.3.tar.gz
+
+#
+cd django
+python setup.py install
+# .bash_profile 
+# PATH
+cd /root/test_project/python/django_pro/aaa
+
+vim aaa/settings.py
+#add
+INSTALLED_APPS = ('appname',)
+
+vim aaa/urls.py
+#add
+url(r'^blog/index/$', 'blog.views.index'),
+
+vim views.py
+#add
+from django.http import HttpResponse
+def index(req):
+        return HttpResponse('<h1>hello welcom to Django!</h1>')
+
+django-admin.py startproject aaa
+cd aaa
+django-admin.py startapp blog
+python manage.py runserver
+
+elinks http://127.0.0.1:8000/blog/index
+
+
+#use template
+mkdir blog/templates
+vim blog/templates/index.html
+<h1>hello {{user.name}}, my age is {{user.age}}</h1>
+
+vim blog/views.py {
+from django.shortcuts import render, render_to_response
+from django.http import HttpResponse
+from django.template import loader, Context
+                                    
+# Create your views here.           
+def index(req):
+        #1.
+        #return HttpResponse('<h1>hello welcom to Django!</h1>')
+        #2.
+        #t = loader.get_template('index.html')
+        #c = Context({'title':'python', 'username':'sunqi'})
+        #return HttpResponse(t.render(c))
+        #3.
+	user = {'name':'sunqi', 'age':23, 'sex':'male'}
+	user = class_p('dict_values1','dict_values2','dict_values3')
+	list = []
+        return render_to_response('index.html', {'title':'python', 'user':user, 'list': list.0})
+}
+
+#use object person
+like dict
+#no args, must have return value
+person.func
+
+#template tags
+{%if user1%}
+        <a>name:{{user.name}}</a>
+{%else%}
+{%endif%}
+
+# db
+#ubuntu
+sudo apt-get install libmysqlclient-dev
+sudo apt-get install python-dev
+python setup.py build
+python setup.py install 
+
+#rehl
+rpm -ivh mysql-devel Mysql-python
+grant all privileges on *.* to 'root'@'192.168.1.104' identified by 'The_sunqi' with grant option;
+
+python manage.py syncdb
+python manage.py shell
+
+
+
+#uninstall
+easy_install -m package-name
+
+python setup.py install --record log
+cat log | xagrs rm -rf
+
+#encoding
+#python的默认编码文件是用的ASCII码，你将文件存成了UTF-8，解决办法很简单，在文件开头加入
+## -*- coding: UTF-8 -*-    或者  #coding=utf-8
+#
+#set time
+ntpdate cn.pool.ntp.org
+hwclock --systohc
+#bash language
+LC_ALL="en_US.utf8"
+export LC_ALL
